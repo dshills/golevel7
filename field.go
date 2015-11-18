@@ -25,8 +25,15 @@ func (f *Field) parse(seps *Separators) error {
 	r := bytes.NewReader(f.Value)
 	i := 0
 	ii := 0
-	// special case for seperator field in MSH
+	// special case for seperators in MSH seq 2
 	if string(f.Value) == seps.SepField {
+		cmp := Component{Value: f.Value}
+		cmp.SubComponents = append(cmp.SubComponents, SubComponent{Value: f.Value})
+		f.Components = append(f.Components, cmp)
+		return nil
+	}
+	// special case for field separator in MSH seq 1
+	if string(f.Value) == string(seps.FieldSep) {
 		cmp := Component{Value: f.Value}
 		cmp.SubComponents = append(cmp.SubComponents, SubComponent{Value: f.Value})
 		f.Components = append(f.Components, cmp)

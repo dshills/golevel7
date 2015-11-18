@@ -39,8 +39,14 @@ func (s *Segment) parse(seps *Separators) error {
 			s.Fields = append(s.Fields, fld)
 			i = ii
 			seq++
-		case ch == seps.RepSep:
 			if isMSH && seq == 1 {
+				fld := Field{Value: []byte(string(seps.FieldSep)), SeqNum: seq}
+				fld.parse(seps)
+				s.Fields = append(s.Fields, fld)
+				seq++
+			}
+		case ch == seps.RepSep:
+			if isMSH && seq == 2 {
 				// ignore repeat in separator definition
 				continue
 			}
