@@ -1,0 +1,84 @@
+ACK General acknowledgment message
+ADR ADT response
+ADT ADT message
+ARD Ancillary RPT (display)
+BAR Add/change billing account
+CSU Unsolicited clinical study data
+DFT Detail financial transaction
+DSR Display response
+EDR Enhanced display response
+ERP Event replay response
+ERQ Event replay query
+EQQ Embedded query language query
+MCF Delayed acknowledgment
+MDM Documentation message
+MFN Master files notification
+MFK Master files application acknowledgement
+MFD Master files delayed application acknowledgement
+MFQ Master files query
+MFR Master files query response
+ORF Observ. result/record response
+ORM Order message
+ORR Order acknowledgement message
+ORU Observ result/unsolicited
+OSQ Order status query
+OSR Order status response
+QRY Query, original Mode
+PEX Product experience
+PGL Patient goal
+PGR Patient goal response
+PGQ Patient goal query
+PIN Patient Insurance Information
+PPG Patient pathway (goal-oriented)
+PPP Patient pathway (problem-oriented)
+PPR Patient problem
+PPT Patient pathway (goal oriented)
+PPV Patient goal response
+PRQ Patient care problem query
+PRR Patient problem response
+PTQ Patient pathway (problem-oriented) query
+PTR Patient pathway (problem-oriented) response
+PTU Patient pathway (goal-oriented) query
+PTV Patient pathway (goal-oriented) response
+PIN Patient information
+RAR Pharmacy administration information
+RAS Pharmacy administration message
+RCI Return clinical information
+RCL Return clinical list
+RDE Pharmacy encoded order message
+RDR Pharmacy dispense information
+RDS Pharmacy dispense message
+RGV Pharmacy give message
+RGR Pharmacy dose information
+REF Patient referral
+RER Pharmacy encoded order information
+ROD Request patient demographics
+ROR Pharmacy prescription order response
+RPA Return patient authorization
+RPI Return patient information
+RPL Return patient display list
+RPR Return patient list
+RQA Request patient authorization
+RQC Request clinical information
+RQI Request patient information
+RQP Request patient demographics
+RRA Pharmacy administration acknowledgment
+RRD Pharmacy dispense acknowledgment
+RRE Pharmacy encoded order acknowledgment
+RRG Pharmacy give acknowledgment
+RRI Return patient referral
+SIU Schedule information unsolicited
+SPQ Stored procedure request
+SQM Schedule query
+SQR Schedule query response
+CRM Clinical study registration
+SRM Schedule request
+SRR Scheduled request response
+SUR Summary product experience report
+TBR Tabular data response
+UDM Unsolicited display message
+VQQ Virtual table query
+VXQ Query for vaccination record
+VXX Vaccination query response with multiple PID matches
+VXR Vaccination query record response
+VXU Unsolicited vaccination record update
