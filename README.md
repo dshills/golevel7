@@ -55,7 +55,12 @@ msg, err := Decode(data)
 ```go
 data := []byte(...) // raw message
 msg, err := Decode(data)
+
+// First matching value
 val,err := Retrieve(msg, "PID.5.1")
+
+// All matching values
+vals, err = RetrieveAll(msg, "PID.11.1")
 ```
 
 ### Message Validation
@@ -79,7 +84,6 @@ valid, failures := IsValid(msg, val)
 
 * message encoding
 * ACK building
-* elegant way to extract repeating segments and fields
 
 ## Alternatives
 
