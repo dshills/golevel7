@@ -1,6 +1,6 @@
 package golevel7
 
-// VCheck is the type validity check done
+// VCheck is the type validity check to be done
 type VCheck int
 
 // VCheck values
@@ -23,14 +23,16 @@ func IsValid(msg *Message, val []Validation) (bool, []Validation) {
 	failures := []Validation{}
 	valid := true
 	for _, v := range val {
-		value, err := Retrieve(msg, v.Location)
-		switch {
-		case err != nil || value == "":
+		values, err := RetrieveAll(msg, v.Location)
+		if err != nil || len(values) == 0 {
 			valid = false
 			failures = append(failures, v)
-		case v.VCheck == SpecificValue && v.Value != value:
-			valid = false
-			failures = append(failures, v)
+		}
+		for _, value := range values {
+			if value == "" || (v.VCheck == SpecificValue && v.Value != value) {
+				valid = false
+				failures = append(failures, v)
+			}
 		}
 	}
 
