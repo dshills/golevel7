@@ -11,10 +11,7 @@ func TestRetrieve(t *testing.T) {
 	msg := &Message{Value: data}
 	msg.parse()
 	if err != nil {
-		t.Error(err)
-	}
-	if len(msg.Segments) != 9 {
-		t.Errorf("Expected 9 segments got %d\n", len(msg.Segments))
+		t.Fatal(err)
 	}
 
 	val, err := Retrieve(msg, "OBR.4.2")
@@ -43,10 +40,7 @@ func TestRetrieveAll(t *testing.T) {
 	msg := &Message{Value: data}
 	msg.parse()
 	if err != nil {
-		t.Error(err)
-	}
-	if len(msg.Segments) != 9 {
-		t.Errorf("Expected 9 segments got %d\n", len(msg.Segments))
+		t.Fatal(err)
 	}
 
 	vals, err := RetrieveAll(msg, "OBX.1")
@@ -70,5 +64,24 @@ func TestRetrieveAll(t *testing.T) {
 	if vals[3] != "4" {
 		t.Errorf("Expected 4 got %s\n", vals[3])
 	}
+}
 
+func TestRepFields(t *testing.T) {
+	data, err := readFile("./testdata/msg.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	msg := &Message{Value: data}
+	msg.parse()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	vals, err := RetrieveAll(msg, "PID.11.0")
+	if err != nil {
+		t.Error(err)
+	}
+	if len(vals) != 2 {
+		t.Errorf("Expected 2 got %d\n", len(vals))
+	}
 }
