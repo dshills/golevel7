@@ -57,10 +57,10 @@ data := []byte(...) // raw message
 msg, err := Decode(data)
 
 // First matching value
-val,err := Retrieve(msg, "PID.5.1")
+val, err := Retrieve(msg, "PID.5.1")
 
 // All matching values
-vals, err = RetrieveAll(msg, "PID.11.1")
+vals, err := RetrieveAll(msg, "PID.11.1")
 ```
 
 ### Message Validation
