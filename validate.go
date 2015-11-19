@@ -11,9 +11,10 @@ const (
 
 // Validation contains information to validate a message value
 type Validation struct {
-	Location string
-	VCheck   VCheck
-	Value    string
+	Location string // Query syntax
+	VCheck   VCheck // What to check
+	Value    string // Matching value for SpecificValue
+	err      error  // error to use
 }
 
 // IsValid checks a message for validity based on a set of criteria

@@ -55,6 +55,57 @@ func (m *Message) Segment(s string) (*Segment, error) {
 	return nil, fmt.Errorf("Segment not found")
 }
 
+// AllSegments returns the first matching segmane with name s
+func (m *Message) AllSegments(s string) ([]*Segment, error) {
+	segs := []*Segment{}
+	for i, seg := range m.Segments {
+		fld, err := seg.Field(0)
+		if err != nil {
+			continue
+		}
+		if string(fld.Value) == s {
+			segs = append(segs, &m.Segments[i])
+		}
+	}
+	if len(segs) == 0 {
+		return segs, fmt.Errorf("Segment not found")
+	}
+	return segs, nil
+}
+
+// Get returns the first value specified by the Location
+func (m *Message) Get(l *Location) (string, error) {
+	if l.Segment == "" {
+		return string(m.Value), nil
+	}
+	seg, err := m.Segment(l.Segment)
+	if err != nil {
+		return "", err
+	}
+	return seg.Get(l)
+}
+
+// GetAll returns all values specified by the Location
+func (m *Message) GetAll(l *Location) ([]string, error) {
+	vals := []string{}
+	if l.Segment == "" {
+		vals = append(vals, string(m.Value))
+		return vals, nil
+	}
+	segs, err := m.AllSegments(l.Segment)
+	if err != nil {
+		return vals, err
+	}
+	for _, s := range segs {
+		vs, err := s.GetAll(l)
+		if err != nil {
+			return vals, err
+		}
+		vals = append(vals, vs...)
+	}
+	return vals, nil
+}
+
 func (m *Message) parse() error {
 	if err := m.parseSep(); err != nil {
 		return err

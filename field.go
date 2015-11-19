@@ -55,3 +55,15 @@ func (f *Field) Component(i int) (*Component, error) {
 	}
 	return &f.Components[i], nil
 }
+
+// Get returns the value specified by the Location
+func (f *Field) Get(l *Location) (string, error) {
+	if l.Comp == -1 {
+		return string(f.Value), nil
+	}
+	comp, err := f.Component(l.Comp)
+	if err != nil {
+		return "", err
+	}
+	return comp.Get(l)
+}

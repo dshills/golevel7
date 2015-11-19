@@ -59,3 +59,15 @@ func (c *Component) encode(seps *Separators) []byte {
 	}
 	return bytes.Join(buf, []byte(string(seps.SubComSep)))
 }
+
+// Get returns the value specified by the Location
+func (c *Component) Get(l *Location) (string, error) {
+	if l.SubComp == -1 {
+		return string(c.Value), nil
+	}
+	sc, err := c.SubComponent(l.SubComp)
+	if err != nil {
+		return "", err
+	}
+	return string(sc.Value), nil
+}

@@ -92,3 +92,50 @@ func (s *Segment) Field(i int) (*Field, error) {
 	}
 	return nil, fmt.Errorf("Field not found")
 }
+
+// AllFields returns all fields with sequence number i
+func (s *Segment) AllFields(i int) ([]*Field, error) {
+	flds := []*Field{}
+	for idx, fld := range s.Fields {
+		if fld.SeqNum == i {
+			flds = append(flds, &s.Fields[idx])
+		}
+	}
+	if len(flds) == 0 {
+		return flds, fmt.Errorf("Field not found")
+	}
+	return flds, nil
+}
+
+// Get returns the first value specified by the Location
+func (s *Segment) Get(l *Location) (string, error) {
+	if l.FieldSeq == -1 {
+		return string(s.Value), nil
+	}
+	fld, err := s.Field(l.FieldSeq)
+	if err != nil {
+		return "", err
+	}
+	return fld.Get(l)
+}
+
+// GetAll returns all values specified by the Location
+func (s *Segment) GetAll(l *Location) ([]string, error) {
+	vals := []string{}
+	if l.FieldSeq == -1 {
+		vals = append(vals, string(s.Value))
+		return vals, nil
+	}
+	flds, err := s.AllFields(l.FieldSeq)
+	if err != nil {
+		return vals, err
+	}
+	for _, f := range flds {
+		v, err := f.Get(l)
+		if err != nil {
+			return vals, err
+		}
+		vals = append(vals, v)
+	}
+	return vals, nil
+}
