@@ -10,6 +10,8 @@
 * Decode HL7 messages
 * Unmarshal into Go structs
 * Simple query syntax
+* Message validation
+* Encode - Coming soon!
 
 ## Installation
 	go get github.com/dshills/golevel7
