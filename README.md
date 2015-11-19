@@ -16,7 +16,7 @@
 
 ## Usage
 
-###	Data location syntax
+###	Data Location Syntax
 
 	segment-name.field-sequence-number.component.subcomponent
 	Segments are specified using the three letter name (MSH)
@@ -28,36 +28,55 @@
 	"PID.5.1" returns the 1st component of the 5th field of the PID segment
 	"PID.5.1.2" returns the 2nd subcomponent of the 1st component of the 5th field of the PID
 
-###	To extract data from a message
-```go
-	data := []byte(...) // raw message
-	type my7 struct {
-		FirstName string `hl7:"PID.5.1"`
-		LastName  string `hl7:"PID.5.0"`
-	}
-	st := my7{}
+###	Data Extraction / Unmarshal
 
-	err := Unmarshal(data, &st)
+```go
+data := []byte(...) // raw message
+type my7 struct {
+	FirstName string `hl7:"PID.5.1"`
+	LastName  string `hl7:"PID.5.0"`
+}
+st := my7{}
+
+err := Unmarshal(data, &st)
 ```
 
-### To decode an HL7 message into the Message struct
+### Parse / Decode
+
 ```go
-	data := []byte(...) // raw message
-	msg, err := Decode(data)
+data := []byte(...) // raw message
+msg, err := Decode(data)
 ```
 
-### To query the Message
+### Message Query
+
 ```go
-	data := []byte(...) // raw message
-	msg, err := Decode(data)
-	val,err := Retrieve(msg, "PID.5.1")
+data := []byte(...) // raw message
+msg, err := Decode(data)
+val,err := Retrieve(msg, "PID.5.1")
+```
+
+### Message Validation
+
+Message validation is accomplished using the IsValid function. Create a slice of Validation structs and pass them, with the message, to the IsValid function. The first return value is a pass / fail bool. The second return value returns the Validation structs that failed.
+
+A number of validation slices are already defined and can be combined to build custom validation criteria. The NewValidMSH24() function is one example. It returns a set of validations for the MSH segment for version 2.4 of the HL7 specification.
+
+```go
+val := []Validation{
+	Validation{Location: "MSH.0", VCheck: SpecificValue, Value: "MSH"},
+	Validation{Location: "MSH.1", VCheck: HasValue},
+	Validation{Location: "MSH.2", VCheck: HasValue},
+}
+data := []byte(...) // raw message
+msg, err := Decode(data)
+valid, failures := IsValid(msg, val)
 ```
 
 ## To Do
 
 * message encoding
 * ACK building
-* message validation
 * elegant way to extract repeating segments and fields
 
 ## Alternatives
