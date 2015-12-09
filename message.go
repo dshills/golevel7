@@ -2,7 +2,9 @@ package golevel7
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
+	"reflect"
 )
 
 const segmentSep = '\x0d'
@@ -29,7 +31,19 @@ type Message struct {
 
 // NewMessage returns a new message with the v byte value
 func NewMessage(v []byte) *Message {
-	return &Message{Value: v}
+	// set default separators
+	seps := Separators{
+		FieldSep:  '|',
+		ComSep:    '^',
+		RepSep:    '~',
+		EscSep:    '\\',
+		SubComSep: '&',
+		SepField:  "^~\\&",
+	}
+	return &Message{
+		Value:      v,
+		Separators: seps,
+	}
 }
 
 func (m *Message) String() string {
@@ -73,6 +87,20 @@ func (m *Message) AllSegments(s string) ([]*Segment, error) {
 	return segs, nil
 }
 
+// Find gets a value from a message using location syntax
+// finds the first occurence of the segment and first of repeating fields
+// if the loc is not valid an error is returned
+func (m *Message) Find(loc string) (string, error) {
+	return m.Get(NewLocation(loc))
+}
+
+// FindAll gets all values from a message using location syntax
+// finds all occurences of the segments and all repeating fields
+// if the loc is not valid an error is returned
+func (m *Message) FindAll(loc string) ([]string, error) {
+	return m.GetAll(NewLocation(loc))
+}
+
 // Get returns the first value specified by the Location
 func (m *Message) Get(l *Location) (string, error) {
 	if l.Segment == "" {
@@ -104,6 +132,24 @@ func (m *Message) GetAll(l *Location) ([]string, error) {
 		vals = append(vals, vs...)
 	}
 	return vals, nil
+}
+
+// Set will insert a value into a message at Location
+func (m *Message) Set(l *Location, val string) error {
+	if l.Segment == "" {
+		return errors.New("Segment is required")
+	}
+	seg, err := m.Segment(l.Segment)
+	if err != nil {
+		s := Segment{}
+		s.forceField([]byte(l.Segment), 0)
+		s.Set(l, val, &m.Separators)
+		m.Segments = append(m.Segments, s)
+	} else {
+		seg.Set(l, val, &m.Separators)
+	}
+	m.Value = m.encode()
+	return nil
 }
 
 func (m *Message) parse() error {
@@ -148,8 +194,11 @@ func (m *Message) parse() error {
 }
 
 func (m *Message) parseSep() error {
+	if len(m.Value) < 8 {
+		return errors.New("Invalid message length less than 8 bytes")
+	}
 	if string(m.Value[:3]) != "MSH" {
-		return fmt.Errorf("Invalid message: Missing MSH segment")
+		return errors.New("Invalid message: Missing MSH segment")
 	}
 
 	r := bytes.NewReader(m.Value)
@@ -175,5 +224,61 @@ func (m *Message) parseSep() error {
 			m.Separators.SubComSep = ch
 		}
 	}
+	return nil
+}
+
+func (m *Message) encode() []byte {
+	buf := [][]byte{}
+	for _, s := range m.Segments {
+		buf = append(buf, s.Value)
+	}
+	return bytes.Join(buf, []byte(string(segmentSep)))
+}
+
+// IsValid checks a message for validity based on a set of criteria
+// it returns valid and any failed validation rules
+func (m *Message) IsValid(val []Validation) (bool, []Validation) {
+	failures := []Validation{}
+	valid := true
+	for _, v := range val {
+		values, err := m.FindAll(v.Location)
+		if err != nil || len(values) == 0 {
+			valid = false
+			failures = append(failures, v)
+		}
+		for _, value := range values {
+			if value == "" || (v.VCheck == SpecificValue && v.Value != value) {
+				valid = false
+				failures = append(failures, v)
+			}
+		}
+	}
+
+	return valid, failures
+}
+
+// Unmarshal fills a structure from an HL7 message
+// It will panic if interface{} is not a pointer to a struct
+// Unmarshal will decode the entire message before trying to set values
+// it will set the first matching segment / first matching field
+// repeating segments and fields is not well suited to this
+// for the moment all unmarshal target fields must be strings
+func (m *Message) Unmarshal(it interface{}) error {
+	st := reflect.ValueOf(it).Elem()
+	stt := st.Type()
+	for i := 0; i < st.NumField(); i++ {
+		fld := stt.Field(i)
+		r := fld.Tag.Get("hl7")
+		if r != "" {
+			if val, _ := m.Find(r); val != "" {
+				if st.Field(i).CanSet() {
+					// TODO support fields other than string
+					//fldT := st.Field(i).Type()
+					st.Field(i).SetString(val)
+				}
+			}
+		}
+	}
+
 	return nil
 }

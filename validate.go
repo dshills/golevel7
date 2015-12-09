@@ -17,28 +17,6 @@ type Validation struct {
 	err      error  // error to use
 }
 
-// IsValid checks a message for validity based on a set of criteria
-// it returns valid and any failed validation rules
-func IsValid(msg *Message, val []Validation) (bool, []Validation) {
-	failures := []Validation{}
-	valid := true
-	for _, v := range val {
-		values, err := RetrieveAll(msg, v.Location)
-		if err != nil || len(values) == 0 {
-			valid = false
-			failures = append(failures, v)
-		}
-		for _, value := range values {
-			if value == "" || (v.VCheck == SpecificValue && v.Value != value) {
-				valid = false
-				failures = append(failures, v)
-			}
-		}
-	}
-
-	return valid, failures
-}
-
 // NewValidORMDietaryOrder24 is an example of validating a ORM^001 message
 func NewValidORMDietaryOrder24() []Validation {
 	v := []Validation{

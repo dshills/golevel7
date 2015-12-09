@@ -13,21 +13,12 @@ func TestValid(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer file.Close()
-
-	data := make([]byte, 1024)
-	if _, err = file.Read(data); err != nil {
-		t.Fatal(err)
-	}
-
-	msg, err := Decode(data)
+	msg, err := NewDecoder(file).Message()
 	if err != nil {
 		t.Error(err)
 	}
-	if len(msg.Segments) != 5 {
-		t.Errorf("Expected 5 segments got %d\n", len(msg.Segments))
-	}
 
-	valid, failures := IsValid(msg, NewValidMSH24())
+	valid, failures := msg.IsValid(NewValidMSH24())
 	if valid == false {
 		t.Error("Expected valid MSH got invalid. Failures:")
 		for i, f := range failures {
@@ -35,7 +26,7 @@ func TestValid(t *testing.T) {
 		}
 	}
 
-	valid, failures = IsValid(msg, NewValidPID24())
+	valid, failures = msg.IsValid(NewValidPID24())
 	if valid == false {
 		t.Error("Expected valid PID got invalid. Failures:")
 		for i, f := range failures {

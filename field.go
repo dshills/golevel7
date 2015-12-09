@@ -48,6 +48,14 @@ func (f *Field) parse(seps *Separators) error {
 	}
 }
 
+func (f *Field) encode(seps *Separators) []byte {
+	buf := [][]byte{}
+	for _, c := range f.Components {
+		buf = append(buf, c.Value)
+	}
+	return bytes.Join(buf, []byte(string(seps.ComSep)))
+}
+
 // Component returns the component i
 func (f *Field) Component(i int) (*Component, error) {
 	if i >= len(f.Components) {
@@ -66,4 +74,21 @@ func (f *Field) Get(l *Location) (string, error) {
 		return "", err
 	}
 	return comp.Get(l)
+}
+
+// Set will insert a value into a message at Location
+func (f *Field) Set(l *Location, val string, seps *Separators) error {
+	loc := l.Comp
+	if loc < 0 {
+		loc = 0
+	}
+	if x := loc - len(f.Components) + 1; x > 0 {
+		f.Components = append(f.Components, make([]Component, x)...)
+	}
+	err := f.Components[loc].Set(l, val, seps)
+	if err != nil {
+		return err
+	}
+	f.Value = f.encode(seps)
+	return nil
 }

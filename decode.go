@@ -1,14 +1,40 @@
 package golevel7
 
-import "reflect"
+import "io"
 
-// Decode will parse an hl7 byte slice and return a Message
-// if error is not nil the message can by queried for a list errors
-// occuring during parsing
-func Decode(buf []byte) (*Message, error) {
+// Decoder reades hl7 messages from a stream
+type Decoder struct {
+	r io.Reader
+}
+
+// NewDecoder returns a new Decoder that reades from from stream r
+func NewDecoder(r io.Reader) *Decoder {
+	return &Decoder{r: r}
+}
+
+// Message returns a new Message struct parsed from stream r
+func (d *Decoder) Message() (*Message, error) {
+	p := make([]byte, 1000000)
+	i, err := d.r.Read(p)
+	if err != nil {
+		return nil, err
+	}
+	buf := make([]byte, i+1)
+	copy(buf, p)
 	msg := NewMessage(buf)
-	err := msg.parse()
-	return msg, err
+	if err = msg.parse(); err != nil {
+		return nil, err
+	}
+	return msg, nil
+}
+
+// Decode reads from r into interface it
+func (d *Decoder) Decode(it interface{}) error {
+	msg, err := d.Message()
+	if err != nil {
+		return err
+	}
+	return msg.Unmarshal(it)
 }
 
 // Unmarshal fills a structure from an HL7 message
@@ -16,28 +42,12 @@ func Decode(buf []byte) (*Message, error) {
 // Unmarshal will decode the entire message before trying to set values
 // it will set the first matching segment / first matching field
 // repeating segments and fields is not well suited to this
-// for the moment all structure fields must be strings
+// for the moment all unmarshal target fields must be strings
 func Unmarshal(data []byte, it interface{}) error {
-	msg, err := Decode(data)
+	msg := NewMessage(data)
+	err := msg.parse()
 	if err != nil {
 		return err
 	}
-
-	st := reflect.ValueOf(it).Elem()
-	stt := st.Type()
-	for i := 0; i < st.NumField(); i++ {
-		fld := stt.Field(i)
-		r := fld.Tag.Get("hl7")
-		if r != "" {
-			if val, _ := Retrieve(msg, r); val != "" {
-				if st.Field(i).CanSet() {
-					// TODO support fields other than string
-					//fldT := st.Field(i).Type()
-					st.Field(i).SetString(val)
-				}
-			}
-		}
-	}
-
-	return nil
+	return msg.Unmarshal(it)
 }

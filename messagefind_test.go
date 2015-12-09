@@ -2,7 +2,7 @@ package golevel7
 
 import "testing"
 
-func TestRetrieve(t *testing.T) {
+func TestFind(t *testing.T) {
 
 	data, err := readFile("./testdata/msg3.txt")
 	if err != nil {
@@ -14,7 +14,7 @@ func TestRetrieve(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	val, err := Retrieve(msg, "OBR.4.2")
+	val, err := msg.Find("OBR.4.2")
 	if err != nil {
 		t.Error(err)
 	}
@@ -22,7 +22,7 @@ func TestRetrieve(t *testing.T) {
 		t.Errorf("Expected CPT-4 got %s\n", val)
 	}
 
-	val, err = Retrieve(msg, "OBX.3.2")
+	val, err = msg.Find("OBX.3.2")
 	if err != nil {
 		t.Error(err)
 	}
@@ -31,7 +31,7 @@ func TestRetrieve(t *testing.T) {
 	}
 }
 
-func TestRetrieveAll(t *testing.T) {
+func TestFindAll(t *testing.T) {
 
 	data, err := readFile("./testdata/msg3.txt")
 	if err != nil {
@@ -43,7 +43,7 @@ func TestRetrieveAll(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	vals, err := RetrieveAll(msg, "OBX.1")
+	vals, err := msg.FindAll("OBX.1")
 	if err != nil {
 		t.Error(err)
 	}
@@ -77,7 +77,7 @@ func TestRepFields(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	vals, err := RetrieveAll(msg, "PID.11.0")
+	vals, err := msg.FindAll("PID.11.0")
 	if err != nil {
 		t.Error(err)
 	}

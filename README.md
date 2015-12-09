@@ -11,7 +11,7 @@
 * Unmarshal into Go structs
 * Simple query syntax
 * Message validation
-* Encode - Coming soon!
+* Encode messages
 
 ## Installation
 	go get github.com/dshills/golevel7
@@ -40,27 +40,73 @@ type my7 struct {
 }
 st := my7{}
 
-err := Unmarshal(data, &st)
-```
+err := golevel7.Unmarshal(data, &st)
 
-### Parse / Decode
+// from an io.Reader
 
-```go
-data := []byte(...) // raw message
-msg, err := Decode(data)
+golevel7.NewDecoder(reader).Decode(&st)
 ```
 
 ### Message Query
 
 ```go
-data := []byte(...) // raw message
-msg, err := Decode(data)
+msg, err := golevel7.NewDecoder(reader).Message()
 
 // First matching value
-val, err := Retrieve(msg, "PID.5.1")
+val, err := msg.Find("PID.5.1")
 
 // All matching values
-vals, err := RetrieveAll(msg, "PID.11.1")
+vals, err := msg.FindAll("PID.11.1")
+```
+
+### Message building
+
+```go
+	type aMsg struct {
+		FirstName string `hl7:"PID.5.1"`
+		LastName  string `hl7:"PID.5.0"`
+	}
+	mi := golevel7.MsgInfo{
+		SendingApp:        "MyApp",
+		SendingFacility:   "MyPlace",
+		ReceivingApp:      "EMR",
+		ReceivingFacility: "MedicalPlace",
+		MessageType:       "ORM^001",
+	}
+	msg, err := golevel7.StartMessage(mi)
+	am := aMsg{FirstName: "Davin", LastName: "Hills"}
+	bstr, err = golevel7.Marshal(msg, &am)
+
+	// Manually
+
+	type MyHL7Message struct {
+		SendingApp        string `hl7:"MSH.3"`
+		SendingFacility   string `hl7:"MSH.4"`
+		ReceivingApp      string `hl7:"MSH.5"`
+		ReceivingFacility string `hl7:"MSH.6"`
+		MsgDate           string `hl7:"MSH.7"`
+		MessageType       string `hl7:"MSH.9"`
+		ControlID         string `hl7:"MSH.10"`
+		ProcessingID      string `hl7:"MSH.11"`
+		VersionID         string `hl7:"MSH.12"`
+		FirstName 				string `hl7:"PID.5.1"`
+		LastName  				string `hl7:"PID.5.0"`
+	}
+
+	my := MyHL7Message{
+		SendingApp:        "MyApp",
+		SendingFacility:   "MyPlace",
+		ReceivingApp:      "EMR",
+		ReceivingFacility: "MedicalPlace",
+		MessageType:       "ORM^001",
+		MsgDate:					"20151209154606",
+		ControlID:				"MSGID1",
+		ProcessingID:			"P",
+		"VersionID":			"2.4",
+		"FirstName":			"Davin",
+		"LastName":				"Hills",
+	}
+	err := golevel7.NewEncoder(writer).Encode(&my)
 ```
 
 ### Message Validation
@@ -70,19 +116,17 @@ Message validation is accomplished using the IsValid function. Create a slice of
 A number of validation slices are already defined and can be combined to build custom validation criteria. The NewValidMSH24() function is one example. It returns a set of validations for the MSH segment for version 2.4 of the HL7 specification.
 
 ```go
-val := []Validation{
+val := []golevel7.Validation{
 	Validation{Location: "MSH.0", VCheck: SpecificValue, Value: "MSH"},
 	Validation{Location: "MSH.1", VCheck: HasValue},
 	Validation{Location: "MSH.2", VCheck: HasValue},
 }
-data := []byte(...) // raw message
-msg, err := Decode(data)
-valid, failures := IsValid(msg, val)
+msg, err := golevel7.NewDecoder(reader).Message()
+valid, failures := msg.IsValid(val)
 ```
 
 ## To Do
 
-* message encoding
 * ACK building
 
 ## Alternatives

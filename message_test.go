@@ -73,3 +73,27 @@ func TestMessage(t *testing.T) {
 		t.Errorf("Expected 9 segments got %d\n", len(msg.Segments))
 	}
 }
+
+func TestMsgUnmarshal(t *testing.T) {
+	fname := "./testdata/msg.txt"
+	file, err := os.Open(fname)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+
+	msg, err := NewDecoder(file).Message()
+	if err != nil {
+		t.Fatal(err)
+	}
+	st := my7{}
+
+	msg.Unmarshal(&st)
+
+	if st.FirstName != "John" {
+		t.Errorf("Expected John got %s\n", st.FirstName)
+	}
+	if st.LastName != "Jones" {
+		t.Errorf("Expected Jones got %s\n", st.LastName)
+	}
+}

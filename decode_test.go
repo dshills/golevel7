@@ -5,6 +5,11 @@ import (
 	"testing"
 )
 
+type my7 struct {
+	FirstName string `hl7:"PID.5.1"`
+	LastName  string `hl7:"PID.5.0"`
+}
+
 func TestDecode(t *testing.T) {
 	fname := "./testdata/msg.txt"
 	file, err := os.Open(fname)
@@ -13,23 +18,17 @@ func TestDecode(t *testing.T) {
 	}
 	defer file.Close()
 
-	data := make([]byte, 1024)
-	if _, err = file.Read(data); err != nil {
-		t.Fatal(err)
-	}
-
-	msg, err := Decode(data)
+	st := my7{}
+	err = NewDecoder(file).Decode(&st)
 	if err != nil {
 		t.Error(err)
 	}
-	if len(msg.Segments) != 5 {
-		t.Errorf("Expected 5 segments got %d\n", len(msg.Segments))
+	if st.FirstName != "John" {
+		t.Errorf("Expected John got %s\n", st.FirstName)
 	}
-	/*
-		for i, seg := range msg.Segments {
-			t.Errorf("Seg %d %s\n", i, seg.Value)
-		}
-	*/
+	if st.LastName != "Jones" {
+		t.Errorf("Expected Jones got %s\n", st.LastName)
+	}
 }
 
 func TestUnmarshal(t *testing.T) {
@@ -45,10 +44,6 @@ func TestUnmarshal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	type my7 struct {
-		FirstName string `hl7:"PID.5.1"`
-		LastName  string `hl7:"PID.5.0"`
-	}
 	st := my7{}
 
 	Unmarshal(data, &st)

@@ -50,17 +50,3 @@ func NewLocation(l string) *Location {
 
 	return &loc
 }
-
-// Retrieve gets a value from a message using location syntax
-// finds the first occurence of the segment and first of repeating fields
-// if the loc is not valid an error is returned
-func Retrieve(m *Message, loc string) (string, error) {
-	return m.Get(NewLocation(loc))
-}
-
-// RetrieveAll gets all values from a message using location syntax
-// finds all occurences of the segments and all repeating fields
-// if the loc is not valid an error is returned
-func RetrieveAll(m *Message, loc string) ([]string, error) {
-	return m.GetAll(NewLocation(loc))
-}

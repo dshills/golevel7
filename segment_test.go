@@ -18,3 +18,28 @@ func TestSegParse(t *testing.T) {
 		t.Errorf("Expected 20 fields got %d\n", len(seg.Fields))
 	}
 }
+
+func TestSegSet(t *testing.T) {
+	seps := Separators{
+		FieldSep:  '|',
+		ComSep:    '^',
+		RepSep:    '~',
+		EscSep:    '\\',
+		SubComSep: '&',
+		SepField:  "^~\\&",
+	}
+	loc := "ZZZ.10"
+	l := NewLocation(loc)
+	seg := &Segment{}
+	err := seg.Set(l, "TEST", &seps)
+	if err != nil {
+		t.Error(seg)
+	}
+	str, err := seg.Get(l)
+	if err != nil {
+		t.Error(err)
+	}
+	if str != "TEST" {
+		t.Errorf("Expected TEST got %s\n", str)
+	}
+}

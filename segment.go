@@ -2,6 +2,7 @@ package golevel7
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 )
 
@@ -9,6 +10,7 @@ import (
 type Segment struct {
 	Fields []Field
 	Value  []byte
+	maxSeq int
 }
 
 func (s *Segment) String() string {
@@ -76,11 +78,22 @@ func (s *Segment) parse(seps *Separators) error {
 // This is used for separator defines in the MSH segemnt
 // ...and the name forceField is cool ;)
 func (s *Segment) forceField(val []byte, seq int) {
+	if seq > s.maxSeq {
+		s.maxSeq = seq
+	}
 	fld := Field{Value: val, SeqNum: seq}
 	cmp := Component{Value: val}
 	cmp.SubComponents = append(cmp.SubComponents, SubComponent{Value: val})
 	fld.Components = append(fld.Components, cmp)
 	s.Fields = append(s.Fields, fld)
+}
+
+func (s *Segment) encode(seps *Separators) []byte {
+	buf := [][]byte{}
+	for _, f := range s.Fields {
+		buf = append(buf, f.Value)
+	}
+	return bytes.Join(buf, []byte(string(seps.FieldSep)))
 }
 
 // Field returns the field with sequence number i
@@ -138,4 +151,26 @@ func (s *Segment) GetAll(l *Location) ([]string, error) {
 		vals = append(vals, v)
 	}
 	return vals, nil
+}
+
+// Set will insert a value into a message at Location
+func (s *Segment) Set(l *Location, val string, seps *Separators) error {
+	if l.FieldSeq == -1 {
+		return errors.New("Field is required")
+	}
+	if s.maxSeq < l.FieldSeq {
+		for i := s.maxSeq + 1; i <= l.FieldSeq; i++ {
+			s.forceField([]byte(""), i)
+		}
+	}
+	fld, err := s.Field(l.FieldSeq)
+	if err != nil {
+		return err
+	}
+	err = fld.Set(l, val, seps)
+	if err != nil {
+		return err
+	}
+	s.Value = s.encode(seps)
+	return nil
 }

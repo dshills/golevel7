@@ -71,3 +71,17 @@ func (c *Component) Get(l *Location) (string, error) {
 	}
 	return string(sc.Value), nil
 }
+
+// Set will insert a value into a message at Location
+func (c *Component) Set(l *Location, val string, seps *Separators) error {
+	subloc := l.SubComp
+	if subloc < 0 {
+		subloc = 0
+	}
+	if x := subloc - len(c.SubComponents) + 1; x > 0 {
+		c.SubComponents = append(c.SubComponents, make([]SubComponent, x)...)
+	}
+	c.SubComponents[subloc].Value = []byte(val)
+	c.Value = c.encode(seps)
+	return nil
+}
