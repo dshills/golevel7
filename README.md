@@ -89,8 +89,8 @@ vals, err := msg.FindAll("PID.11.1")
 		ControlID         string `hl7:"MSH.10"`
 		ProcessingID      string `hl7:"MSH.11"`
 		VersionID         string `hl7:"MSH.12"`
-		FirstName 				string `hl7:"PID.5.1"`
-		LastName  				string `hl7:"PID.5.0"`
+		FirstName         string `hl7:"PID.5.1"`
+		LastName          string `hl7:"PID.5.0"`
 	}
 
 	my := MyHL7Message{
@@ -99,12 +99,12 @@ vals, err := msg.FindAll("PID.11.1")
 		ReceivingApp:      "EMR",
 		ReceivingFacility: "MedicalPlace",
 		MessageType:       "ORM^001",
-		MsgDate:					"20151209154606",
-		ControlID:				"MSGID1",
-		ProcessingID:			"P",
-		"VersionID":			"2.4",
-		"FirstName":			"Davin",
-		"LastName":				"Hills",
+		MsgDate:           "20151209154606",
+		ControlID:         "MSGID1",
+		ProcessingID:      "P",
+		VersionID:         "2.4",
+		FirstName:         "Davin",
+		LastName:          "Hills",
 	}
 	err := golevel7.NewEncoder(writer).Encode(&my)
 ```
