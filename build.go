@@ -18,6 +18,33 @@ type MsgInfo struct {
 	VersionID         string `hl7:"MSH.12"` // default 2.4
 }
 
+// NewMsgInfo returns a MsgInfo with controlID, message date, Processing Id, and Version set
+// Version = 2.4
+// ProcessingID = P
+func NewMsgInfo() *MsgInfo {
+	info := MsgInfo{}
+	now := time.Now()
+	t := now.Format("20060102150405")
+	info.MsgDate = t
+	info.ControlID = fmt.Sprintf("MSGID%s%d", t, now.Nanosecond())
+	info.ProcessingID = "P"
+	info.VersionID = "2.4"
+	return &info
+}
+
+// NewMsgInfoAck returns a MsgInfo ACK based on the MsgInfo passed in
+func NewMsgInfoAck(mi *MsgInfo) *MsgInfo {
+	info := NewMsgInfo()
+	info.MessageType = "ACK"
+	info.ReceivingApp = mi.SendingApp
+	info.ReceivingFacility = mi.SendingFacility
+	info.SendingApp = mi.ReceivingApp
+	info.SendingFacility = mi.ReceivingFacility
+	info.ProcessingID = mi.ProcessingID
+	info.VersionID = mi.VersionID
+	return info
+}
+
 // StartMessage returns a Message with an MSH segment based on the MsgInfo struct
 func StartMessage(info MsgInfo) (*Message, error) {
 	if info.MessageType == "" {

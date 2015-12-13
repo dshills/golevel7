@@ -12,6 +12,7 @@
 * Simple query syntax
 * Message validation
 * Encode messages
+* Build ACK messages
 
 ## Installation
 	go get github.com/dshills/golevel7
@@ -126,8 +127,6 @@ valid, failures := msg.IsValid(val)
 ```
 
 ## To Do
-
-* ACK building
 
 ## Alternatives
 
