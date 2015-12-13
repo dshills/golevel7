@@ -8,6 +8,7 @@ type ACK struct {
 }
 
 // Acknowledge generates an ACK message based on the passed in message
+// st can be nil for success or to send an AE code
 func Acknowledge(msg *Message, st error) *Message {
 	mi := MsgInfo{}
 	err := msg.Unmarshal(&mi)
