@@ -128,6 +128,9 @@ valid, failures := msg.IsValid(val)
 
 ## To Do
 
+* Better handling of repeating fields for marshal and unmarshal
+* Better handling of repeating segments for marshal and unmarshal
+
 ## Alternatives
 
 * [gohl7](https://github.com/yehezkel/gohl7)
