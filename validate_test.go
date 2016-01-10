@@ -7,7 +7,7 @@ import (
 
 func TestValid(t *testing.T) {
 
-	fname := "./testdata/msg.txt"
+	fname := "./testdata/msg.hl7"
 	file, err := os.Open(fname)
 	if err != nil {
 		t.Fatal(err)

@@ -22,7 +22,10 @@ func (s *Segment) String() string {
 	return str
 }
 
-func (s *Segment) parse(seps *Separators) error {
+func (s *Segment) parse(seps *Delimeters) error {
+	if len(s.Value) < 3 {
+		return fmt.Errorf("Invalid segment. Length %v", len(s.Value))
+	}
 	isMSH := false
 	if string(s.Value[:3]) == "MSH" {
 		isMSH = true
@@ -35,11 +38,18 @@ func (s *Segment) parse(seps *Separators) error {
 		ch, _, _ := r.ReadRune()
 		ii++
 		switch {
-		case isMSH && seq == 2 && ch == seps.RepSep:
+		case ch == eof || (ch == endMsg && seps.LFTermMsg):
+			if ii > i {
+				fld := Field{Value: s.Value[i : ii-1], SeqNum: seq}
+				fld.parse(seps)
+				s.Fields = append(s.Fields, fld)
+			}
+			return nil
+		case isMSH && seq == 2 && ch == seps.Repetition:
 			// ignore repeat separator in separator definition
-		case isMSH && seq == 2 && ch == seps.EscSep:
+		case isMSH && seq == 2 && ch == seps.Escape:
 			// ignore escape separator in separator definition
-		case ch == seps.FieldSep:
+		case ch == seps.Field:
 			if isMSH && seq == 2 {
 				// the separator list is a field in MSH seq 2
 				s.forceField([]byte(s.Value[i:ii-1]), seq)
@@ -52,24 +62,17 @@ func (s *Segment) parse(seps *Separators) error {
 			seq++
 			if isMSH && seq == 1 {
 				// The field separator is itself a field for MSH seq 1
-				s.forceField([]byte(string(seps.FieldSep)), seq)
+				s.forceField([]byte(string(seps.Field)), seq)
 				seq++
 			}
-		case ch == seps.RepSep:
+		case ch == seps.Repetition:
 			fld := Field{Value: s.Value[i : ii-1], SeqNum: seq}
 			fld.parse(seps)
 			s.Fields = append(s.Fields, fld)
 			i = ii
-		case ch == seps.EscSep:
+		case ch == seps.Escape:
 			ii++
 			r.ReadRune()
-		case ch == eof:
-			if ii > i {
-				fld := Field{Value: s.Value[i : ii-1], SeqNum: seq}
-				fld.parse(seps)
-				s.Fields = append(s.Fields, fld)
-			}
-			return nil
 		}
 	}
 }
@@ -88,12 +91,12 @@ func (s *Segment) forceField(val []byte, seq int) {
 	s.Fields = append(s.Fields, fld)
 }
 
-func (s *Segment) encode(seps *Separators) []byte {
+func (s *Segment) encode(seps *Delimeters) []byte {
 	buf := [][]byte{}
 	for _, f := range s.Fields {
 		buf = append(buf, f.Value)
 	}
-	return bytes.Join(buf, []byte(string(seps.FieldSep)))
+	return bytes.Join(buf, []byte(string(seps.Field)))
 }
 
 // Field returns the field with sequence number i
@@ -154,7 +157,7 @@ func (s *Segment) GetAll(l *Location) ([]string, error) {
 }
 
 // Set will insert a value into a message at Location
-func (s *Segment) Set(l *Location, val string, seps *Separators) error {
+func (s *Segment) Set(l *Location, val string, seps *Delimeters) error {
 	if l.FieldSeq == -1 {
 		return errors.New("Field is required")
 	}

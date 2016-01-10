@@ -8,6 +8,7 @@ type Decoder struct {
 }
 
 // NewDecoder returns a new Decoder that reades from from stream r
+// Assumes one message per stream
 func NewDecoder(r io.Reader) *Decoder {
 	return &Decoder{r: r}
 }

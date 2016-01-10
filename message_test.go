@@ -20,7 +20,7 @@ func readFile(fname string) ([]byte, error) {
 }
 
 func TestMessage(t *testing.T) {
-	data, err := readFile("./testdata/msg.txt")
+	data, err := readFile("./testdata/msg.hl7")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,7 +34,7 @@ func TestMessage(t *testing.T) {
 		t.Errorf("Expected 5 segments got %d\n", len(msg.Segments))
 	}
 
-	data, err = readFile("./testdata/msg2.txt")
+	data, err = readFile("./testdata/msg2.hl7")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,7 +47,7 @@ func TestMessage(t *testing.T) {
 		t.Errorf("Expected 5 segments got %d\n", len(msg.Segments))
 	}
 
-	data, err = readFile("./testdata/msg3.txt")
+	data, err = readFile("./testdata/msg3.hl7")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +60,7 @@ func TestMessage(t *testing.T) {
 		t.Errorf("Expected 9 segments got %d\n", len(msg.Segments))
 	}
 
-	data, err = readFile("./testdata/msg4.txt")
+	data, err = readFile("./testdata/msg4.hl7")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -75,7 +75,7 @@ func TestMessage(t *testing.T) {
 }
 
 func TestMsgUnmarshal(t *testing.T) {
-	fname := "./testdata/msg.txt"
+	fname := "./testdata/msg.hl7"
 	file, err := os.Open(fname)
 	if err != nil {
 		t.Fatal(err)

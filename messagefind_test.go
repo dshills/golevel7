@@ -4,7 +4,7 @@ import "testing"
 
 func TestFind(t *testing.T) {
 
-	data, err := readFile("./testdata/msg3.txt")
+	data, err := readFile("./testdata/msg3.hl7")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -33,7 +33,7 @@ func TestFind(t *testing.T) {
 
 func TestFindAll(t *testing.T) {
 
-	data, err := readFile("./testdata/msg3.txt")
+	data, err := readFile("./testdata/msg3.hl7")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -67,7 +67,7 @@ func TestFindAll(t *testing.T) {
 }
 
 func TestRepFields(t *testing.T) {
-	data, err := readFile("./testdata/msg.txt")
+	data, err := readFile("./testdata/msg.hl7")
 	if err != nil {
 		t.Fatal(err)
 	}

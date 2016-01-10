@@ -14,7 +14,7 @@ type Validation struct {
 	Location string // Query syntax
 	VCheck   VCheck // What to check
 	Value    string // Matching value for SpecificValue
-	err      error  // error to use
+	Err      error  // error to use
 }
 
 // NewValidORMDietaryOrder24 is an example of validating a ORM^001 message
