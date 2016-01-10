@@ -4,34 +4,20 @@ import "testing"
 
 func TestCompParse(t *testing.T) {
 	val := []byte("v1&v2&v3&&v5")
-	seps := Separators{
-		FieldSep:  '|',
-		ComSep:    '^',
-		RepSep:    '~',
-		EscSep:    '\\',
-		SubComSep: '&',
-		SepField:  "^~\\&",
-	}
+	seps := NewDelimeters()
 	cmp := &Component{Value: val}
-	cmp.parse(&seps)
+	cmp.parse(seps)
 	if len(cmp.SubComponents) != 5 {
 		t.Errorf("Expected 5 subcomponents got %d\n", len(cmp.SubComponents))
 	}
 }
 
 func TestCompSet(t *testing.T) {
-	seps := Separators{
-		FieldSep:  '|',
-		ComSep:    '^',
-		RepSep:    '~',
-		EscSep:    '\\',
-		SubComSep: '&',
-		SepField:  "^~\\&",
-	}
+	seps := NewDelimeters()
 	loc := "ZZZ.1.0.5"
 	l := NewLocation(loc)
 	cmp := &Component{}
-	err := cmp.Set(l, "TEST", &seps)
+	err := cmp.Set(l, "TEST", seps)
 	if err != nil {
 		t.Error(err)
 	}

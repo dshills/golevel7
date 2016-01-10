@@ -7,42 +7,18 @@ import (
 	"reflect"
 )
 
-const segmentSep = '\x0d'
-const segmentSep2 = '\x0a'
-const eof = rune(0)
-const truncSep = '#'
-
-// Separators holds the list of variable hl7 separators for a message
-type Separators struct {
-	FieldSep  rune
-	ComSep    rune
-	RepSep    rune
-	EscSep    rune
-	SubComSep rune
-	SepField  string
-}
-
 // Message is an HL7 message
 type Message struct {
 	Segments   []Segment
 	Value      []byte
-	Separators Separators
+	Delimeters Delimeters
 }
 
 // NewMessage returns a new message with the v byte value
 func NewMessage(v []byte) *Message {
-	// set default separators
-	seps := Separators{
-		FieldSep:  '|',
-		ComSep:    '^',
-		RepSep:    '~',
-		EscSep:    '\\',
-		SubComSep: '&',
-		SepField:  "^~\\&",
-	}
 	return &Message{
 		Value:      v,
-		Separators: seps,
+		Delimeters: *NewDelimeters(),
 	}
 }
 
@@ -143,10 +119,10 @@ func (m *Message) Set(l *Location, val string) error {
 	if err != nil {
 		s := Segment{}
 		s.forceField([]byte(l.Segment), 0)
-		s.Set(l, val, &m.Separators)
+		s.Set(l, val, &m.Delimeters)
 		m.Segments = append(m.Segments, s)
 	} else {
-		seg.Set(l, val, &m.Separators)
+		seg.Set(l, val, &m.Delimeters)
 	}
 	m.Value = m.encode()
 	return nil
@@ -166,29 +142,22 @@ func (m *Message) parse() error {
 		}
 		ii++
 		switch {
-		case ch == segmentSep || ch == segmentSep2:
-			seg := Segment{Value: m.Value[i:ii]}
-			seg.parse(&m.Separators)
-			m.Segments = append(m.Segments, seg)
-			i = ii
-			ch, _, _ := r.ReadRune()
-			if ch == segmentSep || ch == segmentSep2 {
-				i++
-				ii++
-			} else {
-				r.UnreadRune()
-			}
-		case ch == m.Separators.EscSep:
-			ii++
-			r.ReadRune()
-		case ch == eof:
+		case ch == eof || (ch == endMsg && m.Delimeters.LFTermMsg):
 			v := m.Value[i:ii]
 			if len(v) > 4 { // seg name + field sep
 				seg := Segment{Value: v}
-				seg.parse(&m.Separators)
+				seg.parse(&m.Delimeters)
 				m.Segments = append(m.Segments, seg)
 			}
 			return nil
+		case ch == segTerm:
+			seg := Segment{Value: m.Value[i:ii]}
+			seg.parse(&m.Delimeters)
+			m.Segments = append(m.Segments, seg)
+			i = ii
+		case ch == m.Delimeters.Escape:
+			ii++
+			r.ReadRune()
 		}
 	}
 }
@@ -209,19 +178,19 @@ func (m *Message) parseSep() error {
 		}
 		switch i {
 		case 3:
-			m.Separators.FieldSep = ch
+			m.Delimeters.Field = ch
 		case 4:
-			m.Separators.SepField = string(ch)
-			m.Separators.ComSep = ch
+			m.Delimeters.DelimeterField = string(ch)
+			m.Delimeters.Component = ch
 		case 5:
-			m.Separators.SepField += string(ch)
-			m.Separators.RepSep = ch
+			m.Delimeters.DelimeterField += string(ch)
+			m.Delimeters.Repetition = ch
 		case 6:
-			m.Separators.SepField += string(ch)
-			m.Separators.EscSep = ch
+			m.Delimeters.DelimeterField += string(ch)
+			m.Delimeters.Escape = ch
 		case 7:
-			m.Separators.SepField += string(ch)
-			m.Separators.SubComSep = ch
+			m.Delimeters.DelimeterField += string(ch)
+			m.Delimeters.SubComponent = ch
 		}
 	}
 	return nil
@@ -232,7 +201,7 @@ func (m *Message) encode() []byte {
 	for _, s := range m.Segments {
 		buf = append(buf, s.Value)
 	}
-	return bytes.Join(buf, []byte(string(segmentSep)))
+	return bytes.Join(buf, []byte(string(segTerm)))
 }
 
 // IsValid checks a message for validity based on a set of criteria

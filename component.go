@@ -19,7 +19,7 @@ func (c *Component) String() string {
 	return str
 }
 
-func (c *Component) parse(seps *Separators) error {
+func (c *Component) parse(seps *Delimeters) error {
 	r := bytes.NewReader(c.Value)
 	i := 0
 	ii := 0
@@ -27,19 +27,19 @@ func (c *Component) parse(seps *Separators) error {
 		ch, _, _ := r.ReadRune()
 		ii++
 		switch {
-		case ch == seps.SubComSep:
-			scmp := SubComponent{Value: c.Value[i : ii-1]}
-			c.SubComponents = append(c.SubComponents, scmp)
-			i = ii
-		case ch == seps.EscSep:
-			ii++
-			r.ReadRune()
-		case ch == eof:
+		case ch == eof || (ch == endMsg && seps.LFTermMsg):
 			if ii > i {
 				scmp := SubComponent{Value: c.Value[i : ii-1]}
 				c.SubComponents = append(c.SubComponents, scmp)
 			}
 			return nil
+		case ch == seps.SubComponent:
+			scmp := SubComponent{Value: c.Value[i : ii-1]}
+			c.SubComponents = append(c.SubComponents, scmp)
+			i = ii
+		case ch == seps.Escape:
+			ii++
+			r.ReadRune()
 		}
 	}
 }
@@ -52,12 +52,12 @@ func (c *Component) SubComponent(i int) (*SubComponent, error) {
 	return &c.SubComponents[i], nil
 }
 
-func (c *Component) encode(seps *Separators) []byte {
+func (c *Component) encode(seps *Delimeters) []byte {
 	buf := [][]byte{}
 	for _, sc := range c.SubComponents {
 		buf = append(buf, sc.Value)
 	}
-	return bytes.Join(buf, []byte(string(seps.SubComSep)))
+	return bytes.Join(buf, []byte(string(seps.SubComponent)))
 }
 
 // Get returns the value specified by the Location
@@ -73,7 +73,7 @@ func (c *Component) Get(l *Location) (string, error) {
 }
 
 // Set will insert a value into a message at Location
-func (c *Component) Set(l *Location, val string, seps *Separators) error {
+func (c *Component) Set(l *Location, val string, seps *Delimeters) error {
 	subloc := l.SubComp
 	if subloc < 0 {
 		subloc = 0

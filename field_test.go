@@ -4,34 +4,20 @@ import "testing"
 
 func TestFieldParse(t *testing.T) {
 	val := []byte("520 51st Street^^Denver^CO^80020^USA")
-	seps := Separators{
-		FieldSep:  '|',
-		ComSep:    '^',
-		RepSep:    '~',
-		EscSep:    '\\',
-		SubComSep: '&',
-		SepField:  "^~\\&",
-	}
+	seps := NewDelimeters()
 	fld := &Field{Value: val}
-	fld.parse(&seps)
+	fld.parse(seps)
 	if len(fld.Components) != 6 {
 		t.Errorf("Expected 6 components got %d\n", len(fld.Components))
 	}
 }
 
 func TestFieldSet(t *testing.T) {
-	seps := Separators{
-		FieldSep:  '|',
-		ComSep:    '^',
-		RepSep:    '~',
-		EscSep:    '\\',
-		SubComSep: '&',
-		SepField:  "^~\\&",
-	}
+	seps := NewDelimeters()
 	fld := &Field{}
 	loc := "ZZZ.1.10"
 	l := NewLocation(loc)
-	err := fld.Set(l, "TEST", &seps)
+	err := fld.Set(l, "TEST", seps)
 	if err != nil {
 		t.Error(err)
 	}
