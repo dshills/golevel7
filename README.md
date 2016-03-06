@@ -8,11 +8,12 @@
 ## Features
 
 * Decode HL7 messages
+* Multiple message support with Split
 * Unmarshal into Go structs
 * Simple query syntax
 * Message validation
-* Encode messages
-* Build ACK messages
+
+Note: Message building is not currently working for MSH segments. Coming soon...
 
 ## Installation
 	go get github.com/dshills/golevel7
