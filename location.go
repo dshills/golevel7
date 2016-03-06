@@ -50,3 +50,12 @@ func NewLocation(l string) *Location {
 
 	return &loc
 }
+
+// mshOffset used just for building messages. Since the field seperator is used
+// in the MSH seg 1 building messages gets confused about locations
+func mshOffset(l *Location) *Location {
+	if l.Segment == "MSH" && l.FieldSeq > 2 {
+		l.FieldSeq--
+	}
+	return l
+}

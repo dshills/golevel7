@@ -82,13 +82,12 @@ func TestMsgUnmarshal(t *testing.T) {
 	}
 	defer file.Close()
 
-	msg, err := NewDecoder(file).Message()
+	msgs, err := NewDecoder(file).Messages()
 	if err != nil {
 		t.Fatal(err)
 	}
 	st := my7{}
-
-	msg.Unmarshal(&st)
+	msgs[0].Unmarshal(&st)
 
 	if st.FirstName != "John" {
 		t.Errorf("Expected John got %s\n", st.FirstName)

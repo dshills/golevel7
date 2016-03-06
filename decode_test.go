@@ -19,35 +19,16 @@ func TestDecode(t *testing.T) {
 	defer file.Close()
 
 	st := my7{}
-	err = NewDecoder(file).Decode(&st)
+	msgs, err := NewDecoder(file).Messages()
 	if err != nil {
 		t.Error(err)
 	}
-	if st.FirstName != "John" {
-		t.Errorf("Expected John got %s\n", st.FirstName)
+	if len(msgs) != 1 {
+		t.Fatalf("Expected 1 message got %v\n", len(msgs))
 	}
-	if st.LastName != "Jones" {
-		t.Errorf("Expected Jones got %s\n", st.LastName)
-	}
-}
-
-func TestUnmarshal(t *testing.T) {
-	fname := "./testdata/msg.hl7"
-	file, err := os.Open(fname)
-	if err != nil {
+	if err := msgs[0].Unmarshal(&st); err != nil {
 		t.Fatal(err)
 	}
-	defer file.Close()
-
-	data := make([]byte, 1024)
-	if _, err = file.Read(data); err != nil {
-		t.Fatal(err)
-	}
-
-	st := my7{}
-
-	Unmarshal(data, &st)
-
 	if st.FirstName != "John" {
 		t.Errorf("Expected John got %s\n", st.FirstName)
 	}

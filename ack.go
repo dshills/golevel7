@@ -7,14 +7,9 @@ type ACK struct {
 	ErrMsg       string `hl7:"MSA.3"`
 }
 
-// Acknowledge generates an ACK message based on the passed in message
+// Acknowledge generates an ACK message based on the MsgInfo struct
 // st can be nil for success or to send an AE code
-func Acknowledge(msg *Message, st error) *Message {
-	mi := MsgInfo{}
-	err := msg.Unmarshal(&mi)
-	if err != nil {
-		return nil
-	}
+func Acknowledge(mi MsgInfo, st error) *Message {
 	amsg, _ := StartMessage(*NewMsgInfoAck(&mi))
 	ack := ACK{}
 	ack.Code = "AA"

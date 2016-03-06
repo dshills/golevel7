@@ -1,6 +1,10 @@
 package golevel7
 
-import "io"
+import (
+	"bytes"
+	"io"
+	"io/ioutil"
+)
 
 // Decoder reades hl7 messages from a stream
 type Decoder struct {
@@ -13,42 +17,55 @@ func NewDecoder(r io.Reader) *Decoder {
 	return &Decoder{r: r}
 }
 
-// Message returns a new Message struct parsed from stream r
-func (d *Decoder) Message() (*Message, error) {
-	p := make([]byte, 1000000)
-	i, err := d.r.Read(p)
-	if err != nil {
-		return nil, err
+/*
+	\x0b MESSAGE \x1c\x0d
+	SEG\x0d
+*/
+
+// Split will split a set of HL7 messages
+func (d *Decoder) Split() [][]byte {
+	msgSep := []byte{'\x1c', '\x0d'}
+	by, err := ioutil.ReadAll(d.r)
+	by = bytes.Trim(by, "\x00")
+	if len(by) == 0 || err != nil {
+		return [][]byte{}
 	}
-	buf := make([]byte, i+1)
-	copy(buf, p)
-	msg := NewMessage(buf)
-	if err = msg.parse(); err != nil {
-		return nil, err
+	msgs := bytes.Split(by, msgSep)
+	vmsgs := [][]byte{}
+	for _, msg := range msgs {
+		if len(msg) < 4 {
+			continue
+		}
+		msg = bytes.TrimLeft(msg, "\x0b")
+		vmsgs = append(vmsgs, msg)
 	}
-	return msg, nil
+	return vmsgs
 }
 
-// Decode reads from r into interface it
-func (d *Decoder) Decode(it interface{}) error {
-	msg, err := d.Message()
-	if err != nil {
-		return err
+/*
+func (d *Decoder) split() [][]byte {
+	by, err := ioutil.ReadAll(d.r)
+	if len(by) == 0 || err != nil {
+		return [][]byte{}
 	}
-	return msg.Unmarshal(it)
-}
+	by = bytes.Trim(by, "\x00")
+	by = bytes.TrimLeft(by, "\x0b")
+	by = bytes.TrimSuffix(by, []byte{'\x1c', '\x0d'})
 
-// Unmarshal fills a structure from an HL7 message
-// It will panic if interface{} is not a pointer to a struct
-// Unmarshal will decode the entire message before trying to set values
-// it will set the first matching segment / first matching field
-// repeating segments and fields is not well suited to this
-// for the moment all unmarshal target fields must be strings
-func Unmarshal(data []byte, it interface{}) error {
-	msg := NewMessage(data)
-	err := msg.parse()
-	if err != nil {
-		return err
+	return bytes.Split(by, []byte("\x0a"))
+}
+*/
+
+// Messages returns a new Message slice parsed from stream r
+func (d *Decoder) Messages() ([]*Message, error) {
+	z := []*Message{}
+	bufs := d.Split()
+	for _, buf := range bufs {
+		msg := NewMessage(buf)
+		if err := msg.parse(); err != nil {
+			return nil, err
+		}
+		z = append(z, msg)
 	}
-	return msg.Unmarshal(it)
+	return z, nil
 }

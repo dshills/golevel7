@@ -251,3 +251,10 @@ func (m *Message) Unmarshal(it interface{}) error {
 
 	return nil
 }
+
+// Info returns the MsgInfo for the message
+func (m *Message) Info() (MsgInfo, error) {
+	mi := MsgInfo{}
+	err := m.Unmarshal(&mi)
+	return mi, err
+}
