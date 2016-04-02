@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 // Message is an HL7 message
@@ -243,7 +244,7 @@ func (m *Message) Unmarshal(it interface{}) error {
 				if st.Field(i).CanSet() {
 					// TODO support fields other than string
 					//fldT := st.Field(i).Type()
-					st.Field(i).SetString(val)
+					st.Field(i).SetString(strings.TrimSpace(val))
 				}
 			}
 		}

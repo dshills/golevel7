@@ -27,7 +27,7 @@ func readBuf(reader io.Reader) ([]byte, error) {
 		buf = buf[:n]
 		switch {
 		case err == io.EOF:
-			return buf, nil
+			return buf, err
 		case n < bufCap:
 			return buf, nil
 		case err != nil:
