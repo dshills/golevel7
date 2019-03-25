@@ -1,14 +1,14 @@
 package golevel7
 
 import (
-	"bytes"
 	"fmt"
+	"strings"
 )
 
 //Component is an HL7 component
 type Component struct {
 	SubComponents []SubComponent
-	Value         []byte
+	Value         []rune
 }
 
 func (c *Component) String() string {
@@ -20,7 +20,7 @@ func (c *Component) String() string {
 }
 
 func (c *Component) parse(seps *Delimeters) error {
-	r := bytes.NewReader(c.Value)
+	r :=  strings.NewReader(string(c.Value))
 	i := 0
 	ii := 0
 	for {
@@ -52,12 +52,12 @@ func (c *Component) SubComponent(i int) (*SubComponent, error) {
 	return &c.SubComponents[i], nil
 }
 
-func (c *Component) encode(seps *Delimeters) []byte {
-	buf := [][]byte{}
+func (c *Component) encode(seps *Delimeters) []rune {
+	buf := []string{}
 	for _, sc := range c.SubComponents {
-		buf = append(buf, sc.Value)
+		buf = append(buf, string(sc.Value))
 	}
-	return bytes.Join(buf, []byte(string(seps.SubComponent)))
+	return []rune(string(strings.Join(buf, string(seps.SubComponent))))
 }
 
 // Get returns the value specified by the Location
@@ -81,7 +81,7 @@ func (c *Component) Set(l *Location, val string, seps *Delimeters) error {
 	if x := subloc - len(c.SubComponents) + 1; x > 0 {
 		c.SubComponents = append(c.SubComponents, make([]SubComponent, x)...)
 	}
-	c.SubComponents[subloc].Value = []byte(val)
+	c.SubComponents[subloc].Value = []rune(val)
 	c.Value = c.encode(seps)
 	return nil
 }

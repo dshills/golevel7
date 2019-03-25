@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"io"
+	//"log"
 )
 
 // Decoder reades hl7 messages from a stream
@@ -21,19 +22,34 @@ const bufCap = 1024 * 100
 
 func readBuf(reader io.Reader) ([]byte, error) {
 	r := bufio.NewReader(reader)
-	buf := make([]byte, 0, bufCap)
+	superBuf := []byte{}
+	var err error
 	for {
+		buf := make([]byte, 0, bufCap)
 		n, err := r.Read(buf[:cap(buf)])
 		buf = buf[:n]
+		quit:= false
 		switch {
 		case err == io.EOF:
-			return buf, err
+			//log.Printf("->err == io.EOF")
+			superBuf = append(superBuf,buf...)
+			quit = true
 		case n < bufCap:
-			return buf, nil
+			//log.Printf("->n < bufCap")
+			superBuf = append(superBuf,buf...)
+			//quit = true
 		case err != nil:
-			return nil, err
+			//log.Printf("->err != nil")
+			superBuf = nil
+		default:
+			//log.Printf("->default")
+			superBuf = append(superBuf,buf...)
+		}
+		if quit {
+			break
 		}
 	}
+	return superBuf, err
 }
 
 // Split will split a set of HL7 messages

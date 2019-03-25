@@ -6,19 +6,31 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"golang.org/x/net/html/charset"
+	"io/ioutil"
 )
 
 // Message is an HL7 message
 type Message struct {
 	Segments   []Segment
-	Value      []byte
+	Value      []rune
 	Delimeters Delimeters
 }
 
 // NewMessage returns a new message with the v byte value
 func NewMessage(v []byte) *Message {
+	var utf8V []byte
+	if len(v)!=0 {
+		reader, err := charset.NewReader(bytes.NewReader(v), "text/plain")
+		if err != nil {
+			return nil
+		}
+		utf8V, err = ioutil.ReadAll(reader)
+	}else {
+		utf8V = v
+	}
 	return &Message{
-		Value:      v,
+		Value:      []rune(string(utf8V)),
 		Delimeters: *NewDelimeters(),
 	}
 }
@@ -119,7 +131,7 @@ func (m *Message) Set(l *Location, val string) error {
 	seg, err := m.Segment(l.Segment)
 	if err != nil {
 		s := Segment{}
-		s.forceField([]byte(l.Segment), 0)
+		s.forceField([]rune(l.Segment), 0)
 		s.Set(l, val, &m.Delimeters)
 		m.Segments = append(m.Segments, s)
 	} else {
@@ -133,7 +145,7 @@ func (m *Message) parse() error {
 	if err := m.parseSep(); err != nil {
 		return err
 	}
-	r := bytes.NewReader(m.Value)
+	r := strings.NewReader(string(m.Value))
 	i := 0
 	ii := 0
 	for {
@@ -144,7 +156,9 @@ func (m *Message) parse() error {
 		ii++
 		switch {
 		case ch == eof || (ch == endMsg && m.Delimeters.LFTermMsg):
-			v := m.Value[i:ii]
+			//just for safety: cannot reproduce this on windows
+			safeii:=map[bool]int{true:len(m.Value), false:ii}[ii>len(m.Value)]
+			v := m.Value[i:safeii]
 			if len(v) > 4 { // seg name + field sep
 				seg := Segment{Value: v}
 				seg.parse(&m.Delimeters)
@@ -152,7 +166,7 @@ func (m *Message) parse() error {
 			}
 			return nil
 		case ch == segTerm:
-			seg := Segment{Value: m.Value[i:ii]}
+			seg := Segment{Value: m.Value[i : ii-1]}
 			seg.parse(&m.Delimeters)
 			m.Segments = append(m.Segments, seg)
 			i = ii
@@ -171,7 +185,7 @@ func (m *Message) parseSep() error {
 		return errors.New("Invalid message: Missing MSH segment")
 	}
 
-	r := bytes.NewReader(m.Value)
+	r := bytes.NewReader([]byte(string(m.Value)))
 	for i := 0; i < 8; i++ {
 		ch, _, _ := r.ReadRune()
 		if ch == eof {
@@ -197,12 +211,12 @@ func (m *Message) parseSep() error {
 	return nil
 }
 
-func (m *Message) encode() []byte {
+func (m *Message) encode() []rune {
 	buf := [][]byte{}
 	for _, s := range m.Segments {
-		buf = append(buf, s.Value)
+		buf = append(buf, []byte(string(s.Value)))
 	}
-	return bytes.Join(buf, []byte(string(segTerm)))
+	return []rune(string(bytes.Join(buf, []byte(string(segTerm)))))
 }
 
 // IsValid checks a message for validity based on a set of criteria

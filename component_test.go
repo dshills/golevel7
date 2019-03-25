@@ -3,7 +3,7 @@ package golevel7
 import "testing"
 
 func TestCompParse(t *testing.T) {
-	val := []byte("v1&v2&v3&&v5")
+	val := []rune("v1&v2&v3&&v5")
 	seps := NewDelimeters()
 	cmp := &Component{Value: val}
 	cmp.parse(seps)
@@ -25,6 +25,6 @@ func TestCompSet(t *testing.T) {
 		t.Fatalf("Expected 6 got %d\n", len(cmp.SubComponents))
 	}
 	if string(cmp.SubComponents[5].Value) != "TEST" {
-		t.Errorf("Expected TEST got %s\n", cmp.SubComponents[5].Value)
+		t.Errorf("Expected TEST got %s\n", string(cmp.SubComponents[5].Value))
 	}
 }

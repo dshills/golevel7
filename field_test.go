@@ -3,7 +3,7 @@ package golevel7
 import "testing"
 
 func TestFieldParse(t *testing.T) {
-	val := []byte("520 51st Street^^Denver^CO^80020^USA")
+	val := []rune("520 51st Street^^Denver^CO^80020^USA")
 	seps := NewDelimeters()
 	fld := &Field{Value: val}
 	fld.parse(seps)
@@ -25,6 +25,6 @@ func TestFieldSet(t *testing.T) {
 		t.Fatalf("Expected 11 got %d\n", len(fld.Components))
 	}
 	if string(fld.Components[10].SubComponents[0].Value) != "TEST" {
-		t.Errorf("Expected TEST got %s\n", fld.Components[10].SubComponents[0].Value)
+		t.Errorf("Expected TEST got %s\n", string(fld.Components[10].SubComponents[0].Value))
 	}
 }

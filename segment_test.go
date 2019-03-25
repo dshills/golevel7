@@ -3,7 +3,8 @@ package golevel7
 import "testing"
 
 func TestSegParse(t *testing.T) {
-	val := []byte("PID|||12001||Jones^John^^^Mr.||19670824|M|||123 West St.^^Denver^CO^80020^USA~520 51st Street^^Denver^CO^80020^USA|||||||")
+	val := []rune(`PID|||12001||Jones^John^^^Mr.||19670824|M|||123 West St.^^Denver^CO^80020^USA~520 51st Street^^Denver^CO^80020^USA|||||||
+`)
 	seps := NewDelimeters()
 	seg := &Segment{Value: val}
 	seg.parse(seps)
