@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"reflect"
-	"strings"
 	"golang.org/x/net/html/charset"
 	"io/ioutil"
+	"reflect"
+	"strings"
 )
 
 // Message is an HL7 message
@@ -20,13 +20,13 @@ type Message struct {
 // NewMessage returns a new message with the v byte value
 func NewMessage(v []byte) *Message {
 	var utf8V []byte
-	if len(v)!=0 {
+	if len(v) != 0 {
 		reader, err := charset.NewReader(bytes.NewReader(v), "text/plain")
 		if err != nil {
 			return nil
 		}
 		utf8V, err = ioutil.ReadAll(reader)
-	}else {
+	} else {
 		utf8V = v
 	}
 	return &Message{
@@ -157,7 +157,7 @@ func (m *Message) parse() error {
 		switch {
 		case ch == eof || (ch == endMsg && m.Delimeters.LFTermMsg):
 			//just for safety: cannot reproduce this on windows
-			safeii:=map[bool]int{true:len(m.Value), false:ii}[ii>len(m.Value)]
+			safeii := map[bool]int{true: len(m.Value), false: ii}[ii > len(m.Value)]
 			v := m.Value[i:safeii]
 			if len(v) > 4 { // seg name + field sep
 				seg := Segment{Value: v}
