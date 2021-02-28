@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"io"
-	"commons"
 	//"log"
 )
 
@@ -85,8 +84,4 @@ func (d *Decoder) Messages() ([]*Message, error) {
 		z = append(z, msg)
 	}
 	return z, nil
-}
-
-func (d *Decoder) MessageScanner {
-
 }
