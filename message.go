@@ -42,7 +42,7 @@ func (m *Message) String() string {
 	var str string
 	for _, s := range m.Segments {
 		str += "Message Segment: " + string(s.Value) + "\n"
-		str += s.String()
+		// str += s.String() // removed, way too verbose for now
 	}
 	return str
 }
