@@ -21,8 +21,7 @@ func NewMessageScanner(r io.Reader) {
 	ms.b.Split(commons.CrLfSplit)
 }
 
-func (ms *MessageScanner) Scan() bool {
-	gotOne := false
+func (ms *MessageScanner) Scan() (gotOne bool) {
 	if ms.b.Scan() {
 		if ms.err = ms.b.Err(); ms.err != nil {
 			if ms.b.Bytes() != nil {
