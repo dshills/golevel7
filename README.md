@@ -41,13 +41,9 @@ type my7 struct {
 	LastName  string `hl7:"PID.5.0"`
 }
 st := my7{}
+msg := golevel7.NewMessage(data.Bytes())
+err := golevel7.Unmarshal(&st)
 
-err := golevel7.Unmarshal(data, &st)
-
-// from an io.Reader
-
-golevel7.NewDecoder(reader).Decode(&st)
-```
 
 ### Message Query
 
