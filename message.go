@@ -189,7 +189,7 @@ func (m *Message) parseSep() error {
 		return errors.New("Invalid message length less than 8 bytes")
 	}
 	if string(m.Value[:3]) != "MSH" {
-		return errors.New("Invalid message: Missing MSH segment")
+		return fmt.Errorf("Invalid message: Missing MSH segment -> %v", m.Value[:3])
 	}
 
 	r := bytes.NewReader([]byte(string(m.Value)))
