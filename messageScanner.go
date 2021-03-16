@@ -18,16 +18,15 @@ type MessageScanner struct {
 func NewMessageScanner(r io.Reader) *MessageScanner {
 	ms := &MessageScanner{
 		r: r,
-		b: bufio.NewScanner(r),
+		b: commons.NewBufScanner(r),
 	}
-	ms.b.Split(commons.CrLfSplit)
 	return ms
 }
 
 func (ms *MessageScanner) Scan() (gotOne bool) {
 	if scan := ms.b.Scan(); scan {
-		if ms.err = ms.b.Err(); ms.err != nil {
-			if ms.b.Bytes() != nil {
+		if ms.err = ms.b.Err(); ms.err != nil || len(ms.b.Bytes()) < 5 {
+			if ms.b.Bytes() != nil && !(len(ms.b.Bytes()) < 5) {
 				gotOne = true
 			}
 		} else {

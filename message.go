@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"reflect"
 	"strings"
 
@@ -34,7 +35,9 @@ func NewMessage(v []byte) *Message {
 		Value:      []rune(string(utf8V)),
 		Delimeters: *NewDelimeters(),
 	}
-	newMessage.parse()
+	if err := newMessage.parse(); err != nil {
+		log.Fatal(fmt.Sprintf("Parse Error: %+v", err))
+	}
 	return newMessage
 }
 
@@ -145,6 +148,7 @@ func (m *Message) Set(l *Location, val string) error {
 }
 
 func (m *Message) parse() error {
+	m.Value = []rune(strings.Trim(string(m.Value), "\n\r\x1c\x0b"))
 	if err := m.parseSep(); err != nil {
 		return err
 	}
@@ -275,4 +279,9 @@ func (m *Message) Info() (MsgInfo, error) {
 	mi := MsgInfo{}
 	err := m.Unmarshal(&mi)
 	return mi, err
+}
+
+func (m *Message) ScanSegments() bool {
+
+	return false
 }

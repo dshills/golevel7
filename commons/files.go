@@ -1,40 +1,30 @@
 package commons
 
 import (
+	"bufio"
 	"fmt"
-	"os"
+	"io"
 	"path/filepath"
 	"regexp"
 )
 
-var hl7SplitToken = regexp.MustCompile("\\r\\n\\n?")
+var hl7SplitToken = regexp.MustCompile("(\\r(\\n|\\x1c)+(\\n\\r)?|$)")
+
+const scanBufferSize = 10 * 1024 * 1024
 
 // GetHl7Files finds all hl7 files in the current directory and returns the file names as a slice of strings
-func GetHl7Files() ([]string, error) {
-	var matches []string
+func GetHl7Files() (matches []string, err error) {
 	pattern := "*.hl7"
-
-	err := filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
+	if matches, err = filepath.Glob(pattern); err == nil {
+		for _, v := range matches {
+			fmt.Printf("found %v\n", v)
 		}
-		if matched, err := filepath.Match(pattern, filepath.Base(path)); err != nil {
-			return err
-		} else if matched {
-			matches = append(matches, path)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	} else if len(matches) == 0 {
-		return nil, fmt.Errorf("No files found")
 	}
-	return matches, nil
+	return matches, err
 }
 
 // CrLfSplit implements a split function to deal with hl7 messages in a file, terminated by cr/lf and an optional second lf
-func CrLfSplit(data []byte, atEOF bool) (advance int, token []byte, err error) {
+func crLfSplit(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	if atEOF && len(data) == 0 { // end of file
 	} else {
 		loc := hl7SplitToken.FindIndex(data) // found record delimiter
@@ -43,4 +33,12 @@ func CrLfSplit(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		}
 	}
 	return advance, token, err // no cr/lf found, either the end or get bigger data and look again
+}
+
+func NewBufScanner(r io.Reader) *bufio.Scanner {
+	b := bufio.NewScanner(r)
+	buf := make([]byte, scanBufferSize)
+	b.Buffer(buf, scanBufferSize)
+	b.Split(crLfSplit)
+	return b
 }
