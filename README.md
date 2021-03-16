@@ -47,7 +47,7 @@ err := golevel7.Unmarshal(&st)
 
 ### Generating Sets Of Decoded Messages
 ```go
-msg, err := golevel7.NewDecoder(reader).Messages()
+msgs, err := golevel7.NewDecoder(reader).Messages()
 ```
 // well suited for single or small sets of messages
 // not well suited for large sets of messages
