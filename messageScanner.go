@@ -7,7 +7,7 @@ import (
 )
 
 type MessageScanner struct {
-	r       io.Reader
+	r       io.ReadCloser
 	b       *bufio.Scanner
 	thisMsg *Message
 	err     error
@@ -15,7 +15,7 @@ type MessageScanner struct {
 
 // NewMessageScanner returns a new scanner that returns
 // hl7 messages from an io.Reader
-func NewMessageScanner(r io.Reader) *MessageScanner {
+func NewMessageScanner(r io.ReadCloser) *MessageScanner {
 	ms := &MessageScanner{
 		r: r,
 		b: commons.NewBufScanner(r),
@@ -36,6 +36,8 @@ func (ms *MessageScanner) Scan() (gotOne bool) {
 			ms.thisMsg = NewMessage(ms.b.Bytes())
 		} else {
 			ms.thisMsg = nil
+			ms.b = nil
+			ms.r.Close()
 		}
 		return gotOne
 	}
