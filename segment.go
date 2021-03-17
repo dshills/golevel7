@@ -1,8 +1,8 @@
 package golevel7
 
 import (
-	"fmt"
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -24,14 +24,14 @@ func (s *Segment) String() string {
 
 func (s *Segment) isMSH() bool {
 	var toCheck []rune
-	if len(s.Value)>=3 {
+	if len(s.Value) >= 3 {
 		toCheck = s.Value[:3]
-	} else if len(s.Fields)!=0{
+	} else if len(s.Fields) != 0 {
 		f, err := s.Field(0)
 		if err != nil {
 			return false
 		}
-		toCheck=f.Value[:3]
+		toCheck = f.Value[:3]
 	} else {
 		return false
 	}
@@ -200,4 +200,14 @@ func (s *Segment) Set(l *Location, val string, seps *Delimeters) error {
 	}
 	s.Value = s.encode(seps)
 	return nil
+}
+
+func (s *Segment) GetNumFields() int {
+	numFields := 0
+	for _, f := range s.Fields {
+		if f.SeqNum > numFields {
+			numFields = f.SeqNum
+		}
+	}
+	return numFields
 }
