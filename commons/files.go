@@ -15,11 +15,20 @@ const scanBufferSize = 10 * 1024 * 1024
 // GetHl7Files finds all hl7 files in the current directory and returns the file names as a slice of strings
 func GetHl7Files() (matches []string, err error) {
 	pattern := "*.hl7"
+	fileCnt := 0
+	fmt.Println("")
 	if matches, err = filepath.Glob(pattern); err == nil {
-		for _, v := range matches {
-			fmt.Printf("found %v\n", v)
+		for fileCnt, _ = range matches {
+			fileCnt++
+			if fileCnt == 1 || fileCnt%1000 == 0 {
+				fmt.Printf("\rfound %v", fileCnt)
+			}
 		}
 	}
+	if fileCnt != 1 && fileCnt%1000 != 0 {
+		fmt.Printf("\rfound %v", fileCnt)
+	}
+	fmt.Println("")
 	return matches, err
 }
 
@@ -35,7 +44,7 @@ func crLfSplit(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	return advance, token, err // no cr/lf found, either the end or get bigger data and look again
 }
 
-func NewBufScanner(r io.Reader) *bufio.Scanner {
+func NewBufScanner(r io.ReadCloser) *bufio.Scanner {
 	b := bufio.NewScanner(r)
 	buf := make([]byte, scanBufferSize)
 	b.Buffer(buf, scanBufferSize)
