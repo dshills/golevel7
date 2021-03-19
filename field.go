@@ -12,6 +12,10 @@ type Field struct {
 	Value      []rune
 }
 
+func (f *Field) NumSubFields() int {
+	return len(f.Components)
+}
+
 func (f *Field) String() string {
 	var str string
 	for _, c := range f.Components {

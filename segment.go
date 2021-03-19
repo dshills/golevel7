@@ -209,5 +209,5 @@ func (s *Segment) GetNumFields() int {
 			numFields = f.SeqNum
 		}
 	}
-	return numFields
+	return numFields + 1
 }
