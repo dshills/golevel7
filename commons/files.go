@@ -44,7 +44,7 @@ func crLfSplit(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	return advance, token, err // no cr/lf found, either the end or get bigger data and look again
 }
 
-func NewBufScanner(r io.ReadCloser) *bufio.Scanner {
+func NewBufScanner(r io.Reader) *bufio.Scanner {
 	b := bufio.NewScanner(r)
 	buf := make([]byte, scanBufferSize)
 	b.Buffer(buf, scanBufferSize)

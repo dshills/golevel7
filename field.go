@@ -7,9 +7,10 @@ import (
 
 // Field is an HL7 field
 type Field struct {
-	SeqNum     int
-	Components []Component
-	Value      []rune
+	SeqNum      int
+	Components  []Component
+	Value       []rune
+	Description string
 }
 
 func (f *Field) NumSubFields() int {
