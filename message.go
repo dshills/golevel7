@@ -42,11 +42,12 @@ func NewMessage(v []byte) *Message {
 }
 
 func (m *Message) String() string {
-	var str string
+	// var str string
+	str := "-------- Message --------\n"
 	for _, s := range m.Segments {
-		str += "Message Segment: " + string(s.Value) + "\n"
-		// str += s.String() // removed, way too verbose for now
+		str += s.String()
 	}
+	str += "---------- End ----------\n\n"
 	return str
 }
 

@@ -15,9 +15,16 @@ type Segment struct {
 
 func (s *Segment) String() string {
 	var str string
-	for _, f := range s.Fields {
-		str += fmt.Sprintf("Segment Field: Seq: %d Value: %s\n", f.SeqNum, string(f.Value))
-		str += f.String()
+	for i, f := range s.Fields {
+		value := string(f.Value)
+		if i == 0 {
+			str += fmt.Sprintf("Segment: %v\n", f.String())
+		} else {
+			if value != "" {
+				str += fmt.Sprintf("\t%d: %s\n", f.SeqNum, f.String())
+			}
+			// str += f.String()
+		}
 	}
 	return str
 }
@@ -52,13 +59,14 @@ func (s *Segment) parse(seps *Delimeters) error {
 	i := 0
 	ii := 0
 	seq := 0
+	segName := string(s.Value[0:3]) // this is actually always true
 	for {
 		ch, _, _ := r.ReadRune()
 		ii++
 		switch {
 		case ch == eof || (ch == endMsg && seps.LFTermMsg):
 			if ii > i {
-				fld := Field{Value: s.Value[i : ii-1], SeqNum: seq}
+				fld := Field{Value: s.Value[i : ii-1], SeqNum: seq, SegName: segName}
 				fld.parse(seps)
 				s.Fields = append(s.Fields, fld)
 			}
@@ -72,7 +80,7 @@ func (s *Segment) parse(seps *Delimeters) error {
 				// the separator list is a field in MSH seq 2
 				s.forceField(s.Value[i:ii-1], seq)
 			} else {
-				fld := Field{Value: s.Value[i : ii-1], SeqNum: seq}
+				fld := Field{Value: s.Value[i : ii-1], SeqNum: seq, SegName: segName}
 				fld.parse(seps)
 				s.Fields = append(s.Fields, fld)
 			}
@@ -84,7 +92,7 @@ func (s *Segment) parse(seps *Delimeters) error {
 				seq++
 			}
 		case ch == seps.Repetition:
-			fld := Field{Value: s.Value[i : ii-1], SeqNum: seq}
+			fld := Field{Value: s.Value[i : ii-1], SeqNum: seq, SegName: segName}
 			fld.parse(seps)
 			s.Fields = append(s.Fields, fld)
 			i = ii
@@ -102,7 +110,7 @@ func (s *Segment) forceField(val []rune, seq int) {
 	if seq > s.maxSeq {
 		s.maxSeq = seq
 	}
-	fld := Field{Value: val, SeqNum: seq}
+	fld := Field{Value: val, SeqNum: seq, SegName: "MSH"}
 	cmp := Component{Value: val}
 	cmp.SubComponents = append(cmp.SubComponents, SubComponent{Value: val})
 	fld.Components = append(fld.Components, cmp)

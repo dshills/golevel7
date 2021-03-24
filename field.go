@@ -2,15 +2,16 @@ package golevel7
 
 import (
 	"fmt"
+	"golevel7/commons"
 	"strings"
 )
 
 // Field is an HL7 field
 type Field struct {
-	SeqNum      int
-	Components  []Component
-	Value       []rune
-	Description string
+	SegName    string
+	SeqNum     int
+	Components []Component
+	Value      []rune
 }
 
 func (f *Field) NumSubFields() int {
@@ -18,12 +19,15 @@ func (f *Field) NumSubFields() int {
 }
 
 func (f *Field) String() string {
-	var str string
-	for _, c := range f.Components {
-		str += "Field Component: " + string(c.Value) + "\n"
-		str += c.String()
+	// var str string
+	// for _, c := range f.Components {
+	// 	str += "Field Component: " + string(c.Value) + "\n"
+	// 	str += c.String()
+	// }
+	if f.SeqNum == 0 {
+		return fmt.Sprintf("\t%v", commons.FieldNames[f.SegName][f.SeqNum])
 	}
-	return str
+	return fmt.Sprintf("\t%v: %v", commons.FieldNames[f.SegName][f.SeqNum], string(f.Value))
 }
 
 func (f *Field) parse(seps *Delimeters) error {
