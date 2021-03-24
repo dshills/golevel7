@@ -1,0 +1,24 @@
+1-Order Control	ID	R	Format: Code  Values:  → NW - New Order
+2-Placer Order Number	EI	O	Order number in Epic
+3-Filler Order Number	EI	O	External prescription number assigned by the pharmacy system. If both this field and RXE-15 are populated, the value must be the same. Note: An external prescription number is required in either ORC-3 or RXE-15.
+4-Placer Group Number	EI	O	
+5-Order Status	ID	O	
+6-Response Flag	ID	R	
+7-Quantity/Timing	TQ	O	This field can be processed differently based on interface configuration.  Components used:  → Start date  → End date  → Priority → Condition  Example: ^^^20160514^20160614^ROUTINE^PRN  Condition used for non-numeric refill information (i.e. PRN) Example: ^^^20160514^20160614^ROUTINE^PRN  Note: Either ORC-7 or RXE-1 is required.
+8-Parent	EIP	O	
+9-Date/Time of Transaction	DTM	R	Order date and time
+10-Entered By	XCN	O	Format: <ID>^<Last name>^<First name>^<Middle initial>
+11-Verified By	XCN	O	Format: <ID>^<Last name>^<First name>^<Middle initial>
+12-Medications Prescribing Provider	XCN	R	Format: <ID>^^^^^^^^<Assigning authority>^^^^<ID type>  Alternate format: <ID number>^<Last name>^<First name>^<Middle initial>
+13-Enterer's Location	PL	O	
+14-Call Back Phone Number	XTN	O	
+15-Order Effective Date/Time	DTM	O	
+16-Order Control Code Reason	CWE	O	
+17-Entering Organization	CWE	O	
+18-Entering Device	CWE	O	
+19-Action by	XCN	O	
+20-Advanced Beneficiary Notice Code	CWE	O	
+21-Ordering Facility Name	XON	O	
+22-Ordering Facility Address	XAD	O	
+23-Ordering Facility Phone Number	XTN	O	
+24-Ordering Provider Address	XAD	O	

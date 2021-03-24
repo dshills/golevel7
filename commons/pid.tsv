@@ -1,0 +1,30 @@
+1-Set ID	SI	O	
+2-Patient ID	CX	O	This field is for backward compatibility only.
+3-Patient Identifier List	CX	R	This field can contain values for the patient's Social Security number of driver's license number.  Format: <ID>^^^<Assigning Authority>^<ID type>  Example: <Social Security Number>^^^USSA^SS~<License number>^^^<State>^DL
+4-Alternate Patient ID	CX	O	
+5-Patient Name	XPN	R	Used for patient validation purposes only. Prefix, suffix, and academic title are not stored, but values are verified during patient lookup. → Patient Name  → Prefix  → Suffix  → Academic Title  Format: <Last name>^<First name>^<Middle initials or names>^<Name suffix>^<Title>^<Academic degree>^<Name type>
+6-Mother's Maiden Name	XPN	O	
+7-Date/Time of Birth	DTM	O	Only date of birth is supported.
+8-Sex	IS	O	
+9-Patient Alias	XPN	O	
+10-Race	CWE	O	
+11-Patient Address	XAD	O	
+12-County Code	IS	O	
+13-Phone Number - Home	XTN	O	
+14-Phone Number - Work	XTN	O	
+15-Primary Language	CWE	O	
+16-Marital Status	CWE	O	
+17-Religion	CWE	O	
+18-Patient Account Number	CX	O	Format: <Account number 1>~<Account number 2>... Alternate format: <String>
+19-SSN Number	ST	O	Format: nnn-nn-nnnn or nnnnnnnnnn
+20-Driver's License Number	DLN	O	
+21-Mother's Identifier	CX	O	
+22-Ethnic Group	CWE	O	
+23-Birth Place	ST	O	
+24-Multiple Birth Indicator	ID	O	
+25-Birth Order	NM	O	
+26-Citizenship	CWE	O	
+27-Veteran's Military Status	CWE	O	
+28-Nationality	CWE	O	
+29-Patient Death Date and Time	DTM	O	
+30-Patient Death Indicator	ID	O	

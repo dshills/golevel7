@@ -1,0 +1,3 @@
+1-Set ID	SI	O	
+2-Diagnosis Codeing Method	ID	O	Value: <Code set> or <Null>, depending on configuration.
+3-Diagnosis Code	CWE	R	Format: <Diagnosis code>^<Description>^<Code set>

@@ -1,0 +1,5 @@
+1-Route	CWE	R	Format: <ID>^<Text>  Interface configuration determines how the ID is mapped.
+2-Site	CWE	O	
+3-Administration Device	CWE	O	
+4-Administration method	CWE	O	
+5-Routing Instructions	CWE	O	
