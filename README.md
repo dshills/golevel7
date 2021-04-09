@@ -41,23 +41,32 @@ type my7 struct {
 	LastName  string `hl7:"PID.5.0"`
 }
 st := my7{}
+msg := golevel7.NewMessage(data.Bytes())
+err := golevel7.Unmarshal(&st)
+```
 
-err := golevel7.Unmarshal(data, &st)
+### Generating Sets Of Decoded Messages
+```go
+msgs, err := golevel7.NewDecoder(reader).Messages()
+```
+// well suited for single or small sets of messages
+// not well suited for large sets of messages
 
-// from an io.Reader
-
-golevel7.NewDecoder(reader).Decode(&st)
+```go
+ms:=golevel7.NewMessageScanner(reader)
+for ms.Scan() {
+	msg:=ms.Message()
+}
+if err:=ms.Err(); err!=nil {
+	fmt.Fprintln(os.Stderr, "reading messages:", err)
+}
 ```
 
 ### Message Query
-
-```go
-msg, err := golevel7.NewDecoder(reader).Message()
-
-// First matching value
+First matching value
 val, err := msg.Find("PID.5.1")
 
-// All matching values
+All matching values
 vals, err := msg.FindAll("PID.11.1")
 ```
 

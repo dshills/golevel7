@@ -1,0 +1,4 @@
+1-Set ID	SI	O	
+2-Source of Comment	ID	O	
+3-Comment	FT	R	Format: Free text Note: If more than one segment is received, the text in all occurrences is concatenated into one comment.
+4-Comment Type	CWE	O	Interface configuration determines how the NTE segment is filed based on the value received in this field.

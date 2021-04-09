@@ -1,0 +1,16 @@
+1-unused			
+2-First Filled Date	DTM	O	
+3-Last Filled Date	DTM	O	
+4-Date Written			
+5-Expiration Date	DTM	O	
+6-Day Supply	DTM	O	This is the day supply that will be transferred to the Willow pharmacy.
+7-Second Sig	ST	O	The translated Sig if the sig is in a second language.  Format: <Free text translated sig>
+8-unused			
+9-unused			
+10-Dispense Quantity Remaining	NM	R	The quantity of the medication that will be transferred into the Willow pharmacy.
+11-Dispense Quantity Remaining Unit	ST	R	The quantity unit for the medication that will be transferred into the Willow pharmacy.
+12-Origin Code	ST	O	The origin of the prescription being converted. For example, written or telephone. Interface configuration determines how this code is mapped.
+13-Legacy Pharmacy Name	ST	O	The name of the legacy pharmacy.
+14-Legacy Pharmacy DEA Number	ST	O	The DEA number for the legacy pharmacy
+15-unused			
+16-Prescription Serial Number	ST	O	Available starting November 2018.  The serial number found on written prescriptions.  This number is a legal requirement in some states.

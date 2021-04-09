@@ -1,0 +1,14 @@
+1-Set ID	SI	O	
+2-Quantity	CQ	O	
+3-Repeat Pattern	RPT	O	The repeating frequency for medication orders. Only one frequency is supported. Interface configuration determines how the ID is mapped. Format: <ID>&<Text>  Example: Q4H&QH4
+4-Explicit Time	TM	O	
+5-Relative Time and Units	CQ	O	
+6-Service Duration	CQ	O	Duration. This is a standing count / count type.  Format: <Count>^<Count Type ID>&<Count Type Text> Example: 30^DAYS&DAYS
+7-Start Date/Time	DTM	O	
+8-End Date/Time	DTM	O	
+9-Priority	CWE	O	
+10-Condition Text	TX	O	Coded PRN reason. Although this field has a data type of Text, the interface can receive multiple PRN reasons separated with a ~.
+11-Text Instruction	TX	O	
+12-Conjunction	ID	O	
+13-Occurrence Duration	CQ	O	
+14-Total Occurrences	NM	O	

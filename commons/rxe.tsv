@@ -1,0 +1,40 @@
+1-Quantity/Timing	TQ	O	Interface configuration how this field is processed.  Components Used:  → Start date  → End date  → Priority  → Condition  Example: ^^^20160514^20160614^ROUTINE^PRN  Condition used for non-numeric refill information (i.e. PRN) Example: ^^^20160514^20160614^ROUTINE^PRN  Note: Either ORC-7 or RXE-1 is required. Interface configuration determines whether ORC-7 or RXE-1 is used. A numeric refill in RXE 12 is required if a non-numeric refill is not received in ORC-7.7 or RXE 1.7.
+2-Give Code	CWE	R	Medication code.  Interface configuration determines which code is expected. Format: < ID>^<Medication name>^<Coding system>
+3-Give Amount - Minimum	NM	O	Dose amount
+4-Give Amount - Maximum	NM	O	Total volume for compound medications
+5-Give Units	CWE	O	Dose unit  Format: <ID>^<Text>
+6-Give Dosage Form	CWE	O	
+7-Provider's Administration  Instructions	CWE	O	Free text sig  Format: ^<Free text sig>  Note: Either free text sig or discrete sig is required. Interface configuration determines whether free text or discrete sig is expected.
+8-Deliver-to Location	CM	O	
+9-Substitution Status	ID	R	Values:  → N-DAW: Yes  → G-DAW: No
+10-Dispense Amount	NM	R	Dispense amount
+11-Dispense Units	CWE	R	Dispense unit  Format: <ID>^<Text>
+12-Number of Refills	NM	R	Format: Numeric  Either non-numeric refill (ORC-7.7/RXE-1.7) or numeric refill is required.
+13-Order Provider's DEA Number	XCN	O	
+14-Pharmacist/Treatment Supplier's	XCN	O	
+15-Prescription Number	ST	O	External prescription number assigned by the pharmacy system. If both this field and ORC-3 are populated, the value must be the same. Note: An external prescription number is required in either ORC-3 or RXE-15.
+16-Number of Refills Remaining	NM	O	Format: Numeric
+17-Number of Refills/Doses Dispensed	NM	O	
+18-Date/Time of Most Recent Refill or Dose Dispensed	DTM	O	
+19-Total Daily Doses	CQ	O	
+20-Needs Human Review	ID	O	
+21-Pharmacy/Treatment Supplier's Special Dispensing Instructions	CWE	O	
+22-Give Per	ST	O	
+23-Give Rate Amount	ST	O	
+24-Give Rate Units	CWE	O	
+25-Give Strength	NM	O	
+26-Give Strength Units	CWE	O	
+27-Give Indicatoin	CWE	O	Interface configuration determines whether this field is a formulary exception code or Give indication.  Format: <ID>^<Text>~^<ID>^<Text>
+28-Dispense Package Size	NM	O	
+29-Dispense Package Size Unit	CWE	O	
+30-Dispense Package Method	ID	O	
+31-Supplementary Code	CE	O	
+32-Date/Time of Transaction	DTM	O	Order date and time. Interface configuration determines how this field is used.
+33-Give Drug Strength Volume	NM	O	
+34-Give Drug Strength Volume Units	CWE	O	
+35-Controlled Substance Schedule	CWE	O	
+36-Formulary Status	ID	O	
+37-Pharmaceutical Substance  Alternative	CWE	O	
+38-Pharmacy of Most Recent Fill	CWE	O	
+39-Initial Dispense Amount	NM	O	
+40-Dispensing Pharmacy	CWE	O	Dispensing Pharmacy. Interface configuration determines how this field is used.

@@ -1,4 +1,4 @@
-module github.com/dshills/golevel7
+module golevel7
 
 go 1.12
 
