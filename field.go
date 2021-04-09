@@ -58,10 +58,10 @@ func (f *Field) encode(seps *Delimeters) []rune {
 
 // Component returns the component i
 func (f *Field) Component(i int) (*Component, error) {
-	if i >= len(f.Components) {
+	if i > len(f.Components) || i < 1 {
 		return nil, fmt.Errorf("Component out of range")
 	}
-	return &f.Components[i], nil
+	return &f.Components[i-1], nil
 }
 
 // Get returns the value specified by the Location

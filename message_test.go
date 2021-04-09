@@ -1,10 +1,10 @@
 package golevel7
 
 import (
+	"golang.org/x/net/html/charset"
+	"io/ioutil"
 	"os"
 	"testing"
-	"io/ioutil"
-	"golang.org/x/net/html/charset"
 )
 
 func readFile(fname string) ([]byte, error) {
@@ -14,7 +14,7 @@ func readFile(fname string) ([]byte, error) {
 	}
 	defer file.Close()
 
-	reader, err := charset.NewReader(file,"text/plain")
+	reader, err := charset.NewReader(file, "text/plain")
 	if err != nil {
 		return nil, err
 	}

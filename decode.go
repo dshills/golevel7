@@ -28,22 +28,22 @@ func readBuf(reader io.Reader) ([]byte, error) {
 		buf := make([]byte, 0, bufCap)
 		n, err := r.Read(buf[:cap(buf)])
 		buf = buf[:n]
-		quit:= false
+		quit := false
 		switch {
 		case err == io.EOF:
 			//log.Printf("->err == io.EOF")
-			superBuf = append(superBuf,buf...)
+			superBuf = append(superBuf, buf...)
 			quit = true
 		case n < bufCap:
 			//log.Printf("->n < bufCap")
-			superBuf = append(superBuf,buf...)
+			superBuf = append(superBuf, buf...)
 			//quit = true
 		case err != nil:
 			//log.Printf("->err != nil")
 			superBuf = nil
 		default:
 			//log.Printf("->default")
-			superBuf = append(superBuf,buf...)
+			superBuf = append(superBuf, buf...)
 		}
 		if quit {
 			break
