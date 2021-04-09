@@ -8,8 +8,8 @@ import (
 	"regexp"
 )
 
-var hl7SplitToken = regexp.MustCompile("(\\r(\\n|\\x1c)+(\\n\\r)?MSH\\||$)")
-var hl7FindStartToken = regexp.MustCompile("(MSH\\||$)")
+var hl7SplitToken = regexp.MustCompile("(\\r(\\n|\\x1c)+(\\n\\r)?MSH\\|\\^\\~\\\\\\&\\||$)")
+var hl7FindStartToken = regexp.MustCompile("(MSH\\|\\^\\~\\\\\\&\\||$)")
 
 const scanBufferSize = 10 * 1024 * 1024
 
