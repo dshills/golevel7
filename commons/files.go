@@ -6,6 +6,7 @@ import (
 	"io"
 	"path/filepath"
 	"regexp"
+	"strings"
 )
 
 var hl7SplitToken = regexp.MustCompile("(\\r(\\n|\\x1c)+(\\n\\r)?MSH\\|\\^\\~\\\\\\&\\||$)")
@@ -40,7 +41,8 @@ func crLfSplit(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		loc := hl7SplitToken.FindIndex(data) // found record delimiter
 		if loc != nil || atEOF {
 			nextLoc := hl7FindStartToken.FindIndex(data[1:])
-			return nextLoc[0] + 1, data[0:loc[0]], nil
+			hl7RecPatch := []byte(strings.ReplaceAll(string(data[0:loc[0]]), "\r\n", "\r")) // cr/lf found after each segment, patch.
+			return nextLoc[0] + 1, hl7RecPatch, nil
 		}
 	}
 	return advance, token, err // no cr/lf found, either the end or get bigger data and look again
