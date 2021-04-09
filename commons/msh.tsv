@@ -1,0 +1,27 @@
+			
+Element Name	Type	Usage	Notes
+1-Field Separator	ST	R	Value is typically: |
+2-Encoding Characters	ST	R	Value is typically: ^~\&
+3-Sending Application	HD	O	Free Text
+4-Sending Facility	HD	O	Pharmacy External ID  An organization's Epic configuration settings determine how this field is used.
+5-Receiving Application	HD	O	Free text
+6-Receiving Facility	HD	O	Free Text
+7-Date/Time of Message	DTM	O	
+8-Security	ST	O	
+9-Message Type	MSG	R	Format: <Message type>^<Trigger event>
+10-Message Control ID	ST	O	Value to be returned in MSA-2 in the Acknowledgement message
+11-Processing ID	PT	R	Values:  → D: Debugging  → P: Production  → T: Training
+			
+			
+Incoming Medication Orders from Legacy Pharmacy to Willow Ambulatory Interface Technical Specification 6			
+Element Name	Type	Usage	Notes
+12-Version ID	VID	R	HL7 version number. For example, 2.5.
+13-Sequence Number	NM	O	Optional field used in sequence number protocol. By default, Epic does not use sequence number protocol.
+14-Continuation Provider	ST	O	This field is used with the HL7 DSC segment to define continuations of messages. This allows large messages to be broken into multiple smaller messages, which is necessary under certain implementation limitations. Consult HL7 chapter 2 for more information.
+15-Accept Acknowledgement Type	ID	O	This field identifies the conditions under which Accept Acknowledgements must be returned in response to a message. This field is required for enhanced acknowledgement mode. If null, acknowledgements are sent in original acknowledgement mode. Values:  → AL: Always  → ER: Error/reject conditions only  → NE: Never  → SU: Successful completion only
+16-Application Acknowledgement Type	ID	O	
+17-Country Code	ID	O	
+18-Character Set	ID	O	
+19-Principal Language of Message	CWE	O	
+20-Alternate Character Set Handling Scheme	ID	O	
+21-Conformance Statement ID	EI	O	
